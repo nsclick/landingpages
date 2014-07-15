@@ -1,0 +1,71 @@
+/* NSkamelon Responsive Wordpress theme by NSclick */
+/* CSS For Base Theme */
+
+body{margin:0;padding:0;font-family:Helvetica, Arial, Helvetica, sans-serif;font-size:12px;color:#444}
+*,#wrapper{margin:0;padding:0;text-decoration:none;border:0}
+/* div for clear floating elements */
+.divclear{clear:both;height:0}
+/* width of the content div for all areas, you can make them different by setting the width on each area .content: #header, #main-content, #footer */
+.content{margin:0 auto;background:#eee}
+
+/* General Styles */
+h1, h2, h3, h4, h5, h6{padding:10px}
+h1{font-size:36px}
+h2{font-size:28px}
+a{color:#444}
+p{padding:10px;line-height:16px}
+ul,ol,li{list-style:none}
+img{max-width:100%}
+/* End General Styles */
+
+/* General Elements */
+.spacer{padding:10px}
+/* End General Elements */
+
+/* Header */
+#header{}
+#header .content{}
+#header #toolbar{}
+#header #toolbar a.tool{display:block;background:#ccc;padding:10px;float:right;color:#444}
+#header #toolbar a.tool:hover{background:#bbb;color:#555}
+#header #toolbar a.tool i{vertical-align:middle;font-size:16px}
+#header #toolbar a.tool img{}
+#header #logo-container{padding:10px}
+#header #logo-container a#logo{}
+#header #logo-container a#logo img{}
+#header #logo-container span#slogan{}
+#header #menu{}
+#header #menu ul#nav{list-style:none;display:block}
+#header #menu ul#nav li.nav-link{display:block;float:left}
+#header #menu ul#nav li.nav-link a{display:block;padding:10px;background:#ccc;color:#444}
+#header #menu ul#nav li.nav-link a:hover{background:#bbb;color:#555}
+#header #menu ul#nav li.nav-link a i{}
+/* End Header */
+
+/* Main Content */
+#main-content{}
+#main-content .content{background:#fff}
+#main-content img{max-width:100%}
+/* End Main Content */
+
+/* Footer */
+#footer{}
+#footer .content{}
+#footer .submenu{padding:0 10px}
+#footer .submenu ul.subnav{}
+#footer .submenu ul.subnav li.nav-link{}
+#footer .submenu ul.subnav li.nav-link a{display:block;padding:5px 10px}
+#footer .submenu ul.subnav li.nav-link a:hover{background:#bbb;color:#555}
+#footer .submenu ul.subnav li.nav-link a i{}
+#footer .partners{}
+#footer .partners .partner{}
+#footer .partners .partner a.partner-logo{}
+#footer .partners .partner a.partner-logo img{}
+#footer .partners .partner a.partner-logo span.partner-text{}
+#footer .copyright{padding:10px;text-align:center}
+#footer .copyright p{}
+#footer .copyright p a{}
+/* End Footer */
+
+/* END CSS For Base Theme */
+/* Ricardo Escobar */
