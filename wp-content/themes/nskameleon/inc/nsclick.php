@@ -6,6 +6,8 @@
 function include_php_files($dir){
 	
 	$files = scandir($dir); // returns array of files, sorted alphabetically
+	
+	var_dump($dir);
 
 	foreach($files as $file) {
 		$filename = $dir.'/'.$file;
