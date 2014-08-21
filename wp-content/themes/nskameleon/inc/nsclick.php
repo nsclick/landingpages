@@ -6,8 +6,6 @@
 function include_php_files($dir){
 	
 	$files = scandir($dir); // returns array of files, sorted alphabetically
-	
-	var_dump($dir);
 
 	foreach($files as $file) {
 		$filename = $dir.'/'.$file;
@@ -74,7 +72,7 @@ function nsk_the_content_cleaner( $content ) {
     // Returns the content.
     return $content;
 }
-add_filter( 'the_content', 'nsk_the_content_cleaner', 5 );
+//add_filter( 'the_content', 'nsk_the_content_cleaner', 5 );
 
 function get_post_by_slug( $slug ) { 
 	global $wpdb; 
