@@ -106,11 +106,10 @@ function ns_box_bajada_shortcode( $atts ) {
 	
 	ob_start();
 ?> 
-	<div class="box_bajadac">
-		<div class="box_bajada">
-			<span class="texto"><?php echo $text ?></span>
-			<span class="icono"><?php echo $icon ?></span>
-		</div>
+<div class="box_bajadac">
+	<div class="box_bajada">
+		<span class="texto"><?php echo $text ?></span>
+		<span class="icono"><?php echo $icon ?></span>
 	</div>
 </div>
 <?php
@@ -212,10 +211,7 @@ function ns_box_desc_shortcode( $atts ) {
 		</div>
 		<p><?php echo $desc ?></p>
 	</div>
-	<p>
-		Los técnicos de Chevrolet INALCO son los que mejor conocen tu vehículo, cuentan con herramientas especiales de última generación diseñadas para cada modelo de Chevrolet.
-	</p>
-</div>
+
 <?php
 return ob_get_clean();
 }

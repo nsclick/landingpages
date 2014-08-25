@@ -8,11 +8,11 @@ function include_php_files($dir){
 	$files = scandir($dir); // returns array of files, sorted alphabetically
 
 	foreach($files as $file) {
-		$filename = $dir.'/'.$file;
+		$filename = $dir.DIRECTORY_SEPARATOR.$file;
 		if(is_file($filename)) {
 			$file_parts = pathinfo($filename);
 			if($file_parts['extension'] == 'php')
-			include $dir. "/" . $file;
+			include $dir. DIRECTORY_SEPARATOR . $file;
 		}
 	}
 }
@@ -21,7 +21,7 @@ function include_php_files($dir){
  * Register shortcodes
  * */
 function nsk_shortcodes_init() {
-	$dir = get_template_directory() . "/shortcodes";
+	$dir = get_template_directory() . DIRECTORY_SEPARATOR . "shortcodes";
 	include_php_files($dir);	
 }
 add_action( 'init', 'nsk_shortcodes_init');
@@ -31,7 +31,7 @@ add_action( 'init', 'nsk_shortcodes_init');
  * Register shortcodes
  * */
 function nsk_custom_widgets_init() {
-	$dir = get_template_directory() . "/widgets";
+	$dir = get_template_directory() . DIRECTORY_SEPARATOR. "widgets";
 	include_php_files($dir);	
 }
 add_action( 'init', 'nsk_custom_widgets_init');
