@@ -219,7 +219,7 @@ add_shortcode( 'box_desc', 'ns_box_desc_shortcode' );
 
 register_vc_shortcode(array(
 
-	"name" => __("NSK Box Descripción", 'nskameleon'),
+	"name" => __("NSK Box Descripction", 'nskameleon'),
 	"base" => "box_desc",
 	"class" => "",
 	"category" => __('Content', 'nskameleon'),
@@ -266,36 +266,81 @@ register_vc_shortcode(array(
 
 ));
 
-function ns_form_servicios_shortcode( $atts ) {
+/**
+ * Corm Pixel Shortcode
+ */
+function ns_form_pixel ( $atts, $content = null ) {
+	$name 	= $atts['pixel_parameter_name'];
+	$value 	= $atts['pixel_parameter_value'];
+	$code 	= urldecode ( base64_decode ( $atts['pixel_code'] ) );
+	
+	return 	'<input type="hidden" name="pixels[' . $name . '][p]" value="' . $value . '" />'
+			. '<input type="hidden" name="pixels[' . $name . '][c]" value="' . $code . '" />';
+}
+
+/**
+ * Form CRM Shortcode
+ */
+function ns_form_crm ( $atts, $content = null ) {
+	$url 		= $atts['crm_url'];
+	$username 	= $atts['crm_username'];
+	$pswd 		= $atts['crm_password'];
+	
+	return '';
+}
+add_shortcode ( 'ns_form_pixel', 'ns_form_pixel' );
+
+
+/**
+ * Formulario de Servicios
+ */
+function ns_form_servicios_shortcode( $atts, $content = null) {
+	wp_enqueue_script ( 'ns_form_servicios', get_stylesheet_directory_uri() . '/js/ns_form_servicios.js', array('jquery'), '1.0' );
+	wp_localize_script( 'ns_form_servicios', 'ns_data', array( 'ajax' => admin_url( 'admin-ajax.php' ) ) );
+
 ob_start();
 ?>
+
+<?php
+$sucursales = isset ( $atts['sucursales'] ) ? explode ( ',', $atts['sucursales'] ) : null;
+$correos 	= isset ( $atts['correos'] ) ? explode ( ',', $atts['correos'] ) : null;
+
+// echo '<pre>';
+// var_dump(  );
+// echo '</pre>';
+
+?>
+
 <div class="form_i">
-	<form>
-		<span class="mje_ok">Recibirás en tu correo información completa de todos los servicios.</span>
+	<form id="ns_form_servicios">
+		<span class="mje_ok">Recibir&aacute;s en tu correo informaci&oacute;n completa de todos los servicios.</span>
 		<span class="mje_error">Existen errores en el formulario.</span>
 		<div class="caja">
 			<label for="nombre">Nombre:</label>
-			<input type="text"/>
+			<input name="name" type="text"/>
 		</div>
 		<div class="caja">
 			<label for="email">E-mail:</label>
-			<input type="text"/>
+			<input name="email" type="text"/>
 		</div>
 		<div class="caja">
 			<label for="fono">Tel&eacute;fono:</label>
-			<input type="text"/>
+			<input name="phone" type="text"/>
 		</div>
 		<div class="caja">
 			<label for="sucursal">Seleccione sucursal:</label>
-			<select>
-				<option>sucursal 1</option>
+			<select name="location">
+				<option value="">Elije una sucursal</option>
+				<?php foreach ( $sucursales as $sucursal ): ?>
+					<option value="<?php echo strtolower ( $sucursal ); ?>"><?php echo $sucursal; ?></option>
+				<?php endforeach; ?>
 			</select>
 		</div>
 		<div class="caja">
 			<label for="comentarios">Comentarios:
 				<br/>
 				<b>(Opcional)</b></label>
-			<textarea></textarea>
+			<textarea name="comments"></textarea>
 		</div>
 		<div class="btn_send">
 			<p>
@@ -306,30 +351,88 @@ ob_start();
 				&nbsp;
 			</div>
 		</div>
+
+		<?php
+			if ( !empty ( $correos ) ) :
+				foreach ( $correos as $correo ) :
+		?>
+				<input type="hidden" name="c[]" value="<?php echo $correo; ?>" />
+		<?php
+				endforeach;
+			endif;
+		?>
+
+		<?php
+			if ( !empty ( $sucursales ) ) :
+				foreach ( $sucursales as $sucursal ) :
+		?>
+				<input type="hidden" name="s[]" value="<?php echo $sucursal; ?>" />
+		<?php
+				endforeach;
+			endif;
+		?>
+
+		<!-- Special Fields -->
+		<?php
+			echo do_shortcode ( $content );
+		?>
+		<!--/ Special Fields -->
+
+		<input type="hidden" name="title" value="<?php the_title(); ?>" />
+
 	</form>
 </div>
 <?php
 return ob_get_clean();
 }
-add_shortcode( 'form_servicios', 'ns_form_servicios_shortcode' );
+add_shortcode( 'ns_form_servicios', 'ns_form_servicios_shortcode' );
 
-register_vc_shortcode(array(
-"name" => __("NSK Form Servicios", 'nskameleon'),
-"base" => "form_servicios",
-"class" => "",
-"category" => __('Content', 'nskameleon'),
-//'admin_enqueue_js' => array(get_template_directory_uri() . '/vc_extend/bartag.js'),
-//'admin_enqueue_css' => array(get_template_directory_uri() . '/vc_extend/bartag.css'),
-"params" => array(
-)
-));
+function ns_form_servicios_submit () {
+	// require_once ( get_template_directory() . '/inc/send_crm.php' );
+	// $crm = new Crm;
+	// $response['crm'] = $crm->send_cotizacion($crmData);
 
+	$params = array();
+	parse_str ( $_POST['data'], $params );
+
+	$receivers 	= $params['c'];
+	$comments 	= $params['comments'];
+	$email  	= $params['email'];
+	// $pixels  	= $params['pixels'];
+	$sucursal 	= $params['location'];
+
+	$response = array(
+		'd'		=> $params
+	);
+
+	// wp_mail (
+	// 	$receivers,
+		// ''
+	// );
+
+	$response['m'] = wp_mail (
+		'ljayk@nsclick.cl',
+		'Suject',
+		'Content'
+	);
+
+	echo json_encode ( $response );
+	die;
+}
+
+add_action( 'wp_ajax_ns_form_servicios_submit', 'ns_form_servicios_submit' );
+add_action( 'wp_ajax_nopriv_ns_form_servicios_submit', 'ns_form_servicios_submit' );
+
+
+/**
+ * Formulario de Autos
+ */
 function ns_form_cotiza_shortcode( $atts ) {
 ob_start();
 ?>
 <div class="form_i">
 	<form>
-		<span class="mje_ok">Recibirás en tu correo información completa de todos los servicios.</span>
+		<span class="mje_ok">Recibir&aacute;s en tu correo informaci&oacute;n completa de todos los servicios.</span>
 		<span class="mje_error">Existen errores en el formulario.</span>
 		<div class="caja">
 			<label for="nombre">Nombre:</label>
@@ -416,17 +519,6 @@ ob_start();
 return ob_get_clean();
 }
 add_shortcode( 'form_cotiza', 'ns_form_cotiza_shortcode' );
-
-register_vc_shortcode(array(
-"name" => __("NSK Form Cotizacion", 'nskameleon'),
-"base" => "form_cotiza",
-"class" => "",
-"category" => __('Content', 'nskameleon'),
-//'admin_enqueue_js' => array(get_template_directory_uri() . '/vc_extend/bartag.js'),
-//'admin_enqueue_css' => array(get_template_directory_uri() . '/vc_extend/bartag.css'),
-"params" => array(
-)
-));
 
 function ns_selector_shortcode( $atts ) {
 ob_start();
@@ -519,13 +611,132 @@ return ob_get_clean();
 add_shortcode( 'selector', 'ns_selector_shortcode' );
 
 register_vc_shortcode(array(
-
-	"name" => __("NSK Form Servicios", 'nskameleon'),
-	"base" => "form_servicios",
-	"class" => "",
-	"category" => __('Content', 'nskameleon'),
-	//'admin_enqueue_js' => array(get_template_directory_uri() . '/vc_extend/bartag.js'),
-	//'admin_enqueue_css' => array(get_template_directory_uri() . '/vc_extend/bartag.css'),
-	"params" => array(
+	"name" 		=> __("NSK Form Cotizacion", 'nskameleon'),
+	"base" 		=> "ns_form_cotiza",
+	"class" 	=> "",
+	"category" 	=> __('Content', 'nskameleon'),
+	"as_parent" => array(
+				'only' => 'ns_form_pixel,ns_form_email,ns_form_crm'
+			),
+		    "content_element" 			=> true,
+		    "show_settings_on_create" 	=> false,
+		    "params" 					=> array(
+		        array(
+					"type" 			=> "exploded_textarea",
+					"holder" 		=> "div",
+					"class" 		=> "",
+					"heading" 		=> __("Sucursales"),
+					"param_name" 	=> "sucursales",
+					"value" 		=> '',
+					"description" 	=> __("Sucursales separadas por salto de línea (presionar ENTER).")
+				),
+				array(
+					"type" 			=> "exploded_textarea",
+					"holder" 		=> "div",
+					"class" 		=> "",
+					"heading" 		=> __("Correos"),
+					"param_name" 	=> "correos",
+					"value" 		=> '',
+					"description" 	=> __("Correos separados por salto de línea (presionar ENTER).")
+				),
+				array(
+					"type" 			=> "checkbox",
+					"holder" 		=> "div",
+					"class" 		=> "",
+					"heading" 		=> __("CRM"),
+					"param_name" 	=> "crm",
+					"value" 		=> array(
+						'Incluir'	=> true
+					),
+					"description" 	=> __("Incluye la integración con el CRM.")
 				)
+		    ),
+		    "js_view" 					=> 'VcColumnView'
 ));
+
+register_vc_shortcode ( 
+	array (
+		"name" 						=> __("NS Form Servicios", 'nskameleon'),
+		"base" 						=> "ns_form_servicios",
+		"class" 					=> "",
+		"category" 					=> __('Content', 'nskameleon'),
+		"as_parent" 				=> array(
+			'only' => 'ns_form_pixel,ns_form_email,ns_form_crm'
+		),
+	    "content_element" 			=> true,
+	    "show_settings_on_create" 	=> false,
+	    "params" 					=> array(
+	        array(
+				"type" 			=> "exploded_textarea",
+				"holder" 		=> "div",
+				"class" 		=> "",
+				"heading" 		=> __("Sucursales"),
+				"param_name" 	=> "sucursales",
+				"value" 		=> '',
+				"description" 	=> __("Sucursales separadas por salto de línea (presionar ENTER).")
+			),
+			array(
+				"type" 			=> "exploded_textarea",
+				"holder" 		=> "div",
+				"class" 		=> "",
+				"heading" 		=> __("Correos"),
+				"param_name" 	=> "correos",
+				"value" 		=> '',
+				"description" 	=> __("Correos separados por salto de línea (presionar ENTER).")
+			)
+	    ),
+	    "js_view" 					=> 'VcColumnView'
+	)
+);
+
+register_vc_shortcode ( 
+	array (
+		"name" 						=> __("NS Pixel", 'nskameleon'),
+		"base" 						=> "ns_form_pixel",
+		// "category" 					=> __('Content', 'nskameleon'),
+		"as_child" 					=> array(
+			'only' => 'ns_form_servicios,ns_form_cotiza'
+		),
+	    "content_element" 			=> true,
+	    "params" 					=> array(
+       		array(
+				"type" 			=> "textfield",
+				"holder" 		=> "div",
+				"class" 		=> "",
+				"heading" 		=> __("Nombre del parámetro del Píxel"),
+				"param_name" 	=> "pixel_parameter_name",
+				"value" 		=> '',
+				"description" 	=> __("Nombre del parámetro del Píxel.")
+			),
+			array(
+				"type" 			=> "textfield",
+				"holder" 		=> "div",
+				"class" 		=> "",
+				"heading" 		=> __("Valor del parámetro del Píxel"),
+				"param_name" 	=> "pixel_parameter_value",
+				"value" 		=> '',
+				"description" 	=> __("Valor del parámetro del Píxel.")
+			),
+			array(
+				"type" 			=> "textarea_raw_html",
+				"holder" 		=> "div",
+				"class" 		=> "",
+				"heading" 		=> __("Código del Píxel"),
+				"param_name" 	=> "pixel_code",
+				"value" 		=> '',
+				"description" 	=> __("Código del Píxel.")
+			)
+	    )
+	)
+);
+
+//Your "container" content element should extend WPBakeryShortCodesContainer class to inherit all required functionality
+if ( class_exists( 'WPBakeryShortCodesContainer' ) ) {
+    class WPBakeryShortCode_NS_Form_Servicios extends WPBakeryShortCodesContainer {}
+    class WPBakeryShortCode_NS_Form_Cotiza extends WPBakeryShortCodesContainer {}
+}
+if ( class_exists( 'WPBakeryShortCode' ) ) {
+    class WPBakeryShortCode_NS_Form_Pixel	extends WPBakeryShortCode {}
+    class WPBakeryShortCode_NS_Form_Email 	extends WPBakeryShortCode {}
+    // class WPBakeryShortCode_NS_Form_CRM 	extends WPBakeryShortCode {}
+}
