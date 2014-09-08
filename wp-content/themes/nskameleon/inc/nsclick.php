@@ -89,8 +89,28 @@ function get_permalink_by_slug( $slug ){
 	return get_permalink($post->ID);
 }
 
+
+function get_models(){
+	$mydb = new wpdb('chevroletinalco','nsdev','chevroletinalco','localhost');
+	$rows = $mydb->get_results("SELECT t.*,o.option_value FROM wp_terms t, wp_options o WHERE t.term_id IN (SELECT term_id FROM wp_term_taxonomy where taxonomy = 'Modelo') AND t.term_id=o.option_name ORDER BY t.name");
+	
+	array_walk($rows, 'models_unserialize');
+	
+	return $rows;
+}
+
+function models_unserialize(&$item1, $key, $prefix=0){
+    $item1->option_value = unserialize($item1->option_value);
+}
+
 function debug_var ($data) {
 	echo '<pre>';
 	print_r ( $data );
 	echo '</pre>';
 }
+
+function ns_load_scripts(){
+	wp_enqueue_script( 'jquery.base64',get_template_directory_uri() . '/js/jquery.base64.js', 'jquery', false);	
+}
+add_action('wp_enqueue_scripts', 'ns_load_scripts');
+add_action('admin_enqueue_scripts', 'ns_load_scripts');
