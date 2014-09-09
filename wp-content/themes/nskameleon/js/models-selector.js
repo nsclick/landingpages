@@ -17,12 +17,12 @@
 		});
 		
 		//console.log(selected);
-		var json_str = JSON.stringify(selected); 
-		$( '#models' ).val($.base64.encode( json_str ));
+		var json_str = JSON.stringify(selected);
+		json_str = json_str.replace(/["'\[\]]/g, "");
+		$( '#models' ).val( json_str );
 	};
 	
 	$( ".inalc-models, #all-models" ).on( "change", saveChecked );
 	
-	//var models = 
-
+	
 }(window.jQuery);

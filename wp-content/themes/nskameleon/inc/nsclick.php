@@ -110,7 +110,7 @@ function debug_var ($data) {
 }
 
 function ns_load_scripts(){
-	wp_enqueue_script( 'jquery.base64',get_template_directory_uri() . '/js/jquery.base64.js', 'jquery', false);	
+	//wp_enqueue_script( 'jquery.base64',get_template_directory_uri() . '/js/jquery.base64.js', 'jquery', false);	
 }
 add_action('wp_enqueue_scripts', 'ns_load_scripts');
 add_action('admin_enqueue_scripts', 'ns_load_scripts');

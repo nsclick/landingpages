@@ -1,90 +1,45 @@
 <?php
-// http://chevroletinalco.cl/wp-content/uploads/new-cars/485a5665-b81c-3863-d33c-5266eca822b1/aveo_sedan_fb.jpg
 
 function ns_models_selector_shortcode( $atts ) {
-ob_start();
+	//debug_var($atts);
+	extract( shortcode_atts( array(
+      'price' => '',
+      'photo' => '',
+      'models' => '',
+      'server' => '',
+      'id_destination' => ''
+	), $atts ) );
+	
+	$models = explode(',', $models);
+	$all_models = get_models();
+	
+	//debug_var($all_models);
+	ob_start();
 ?>
 <div class="selector">
+	<?php foreach($all_models as $index => $model): ?>
+	<?php if( in_array( $model->term_id, $models) ):?>
+	<?php 
+		//Determina la foto
+		foreach($model->option_value['fotos'] as $foto){
+			if($foto['type'] == 'fondo_blanco')
+				$thumb = "http://$server" . $foto['url'];
+		}
+	?>
 	<div class="auto">
-		<div class="foto"><img src="/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
+		<?php if($photo): ?><div class="foto"><img src="<?php echo $thumb ?>" alt="<?php echo $model->name ?>" title="<?php echo $model->name ?>" /></div><?php endif; ?>
+		<div class="texto"><b><?php echo $model->name ?></b><?php if($price): ?><span>Desde <b><?php echo number_format($model->option_value['precio_desde'], 0, ',','.'); ?></b></span><?php endif; ?></div>
 		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" >
-				<label class="onoffswitch-label" for="myonoffswitch"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
+			<div class="onoffswitch" term-id="<?php echo $model->term_id ?>">
+				<input type="checkbox" name="onoffswitch<?php echo $index ?>" class="onoffswitch-checkbox" id="myonoffswitch<?php echo $index ?>" >
+				<label class="onoffswitch-label" for="myonoffswitch<?php echo $index ?>"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" /></span></span> </span> </label>
 			</div>
 		</div>
 	</div>
-	<div class="auto">
-		<div class="foto"><img src="/landingpages/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
-		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch2" class="onoffswitch-checkbox" id="myonoffswitch2" >
-				<label class="onoffswitch-label" for="myonoffswitch2"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
-			</div>
-		</div>
-	</div>
-	<div class="auto">
-		<div class="foto"><img src="/landingpages/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
-		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch3" class="onoffswitch-checkbox" id="myonoffswitch3" >
-				<label class="onoffswitch-label" for="myonoffswitch3"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
-			</div>
-		</div>
-	</div>
-	<div class="auto">
-		<div class="foto"><img src="/landingpages/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
-		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch4" class="onoffswitch-checkbox" id="myonoffswitch4" >
-				<label class="onoffswitch-label" for="myonoffswitch4"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
-			</div>
-		</div>
-	</div>
-	<div class="auto">
-		<div class="foto"><img src="/landingpages/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
-		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch5" class="onoffswitch-checkbox" id="myonoffswitch5" >
-				<label class="onoffswitch-label" for="myonoffswitch5"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
-			</div>
-		</div>
-	</div>
-	<div class="auto">
-		<div class="foto"><img src="/landingpages/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
-		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch6" class="onoffswitch-checkbox" id="myonoffswitch6" >
-				<label class="onoffswitch-label" for="myonoffswitch6"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
-			</div>
-		</div>
-	</div>
-	<div class="auto">
-		<div class="foto"><img src="/landingpages/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
-		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch7" class="onoffswitch-checkbox" id="myonoffswitch7" checked>
-				<label class="onoffswitch-label" for="myonoffswitch7"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
-			</div>
-		</div>
-	</div>
-	<div class="auto">
-		<div class="foto"><img src="/landingpages/wp-content/themes/nskameleon/images/cruze.jpg" alt="Modelo y versi&oacute;n" title="Modelo y versi&oacute;n" /></div>
-		<div class="texto"><b>Chevrolet Cruze</b>Sedán 1.8 MT LS<span>Desde <b>$8.590.000</b></span></div>
-		<div class="switcher">
-			<div class="onoffswitch">
-				<input type="checkbox" name="onoffswitch8" class="onoffswitch-checkbox" id="myonoffswitch8" >
-				<label class="onoffswitch-label" for="myonoffswitch8"> <span class="onoffswitch-inner"> <span class="onoffswitch-active"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-yess.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> <span class="onoffswitch-inactive"><span class="onoffswitch-switch"><img src="/landingpages/wp-content/themes/nskameleon/images/ico-arrowright.png" alt="Inalco" title="Inalco" style="margin:8px 0 0 0" /></span></span> </span> </label>
-			</div>
-		</div>
-	</div>
+	<input type="hidden" name="<?php echo $model->term_id ?>" id="<?php echo $model->term_id ?>" value='<?php echo json_encode($model) ?>'>
+	<?php endif; ?>
+	<?php endforeach; ?>
+
 </div>
 <?php
 return ob_get_clean();
@@ -117,11 +72,30 @@ register_vc_shortcode(array(
 			//"description" => __("Una sucursal por linea.", 'nskameleon')
 		),
 		array(
+			"type" => "textfield",
+			"holder" => "div",
+			"class" => "",
+			"heading" => __("Servidor", 'nskameleon'),
+			"param_name" => "server",
+			"value" => __("chevroletinalco.local"),
+			"description" => __("Url del servidor para tomar las fotos miniatura de los autos", 'nskameleon')
+		),
+		array(
+			"type" => "textfield",
+			"holder" => "div",
+			"class" => "",
+			"heading" => __("ID campo destino", 'nskameleon'),
+			"param_name" => "id_destination",
+			"value" => __(""),
+			"description" => __("ID del campo destino de la seleccion", 'nskameleon')
+		),
+		
+		array(
 			"type" => "ns_models",
 			"holder" => "div",
 			"class" => "",
+			"param_name" => "models",
 			"heading" => __('Modelos', 'nskameleon'),
-			"param_name" => "modelssss",
 			//"value" => array('Si' => 'si'),
 			//"description" => __("Una sucursal por linea.", 'nskameleon')
 		)
@@ -133,13 +107,16 @@ function ns_param_models_field($settings, $value) {
 	$dependency = vc_generate_dependencies_attributes($settings);
 	$models = get_models();
 	
-	$value = $value ? $value : '[]';
+	$value = $value ? $value : '';
+	$selected = $value ? explode(',', $value) : array() ;
+	
 	$html = array();
-	$html[] = '<input class="wpb_vc_param_value" type="text" name="' . $settings['param_name'] . '" id="models" value="'. base64_encode($value)  .'"/>';	
+	$html[] = '<input class="wpb_vc_param_value" type="hidden" name="' . $settings['param_name'] . '" id="models" value="'. $value  .'"/>';	
 	$html[] = '<div class="edit_form_line"><input type="checkbox" name="all-models" id="all-models" value="1"/><b>Todos</b></div>';	
 
 	foreach($models as $model){
-		$html[] = '<div class="edit_form_line"><input type="checkbox" class="inalc-models" name="m-list[]" value="' . $model->term_id . '"/>' . $model->name . '</div>';	
+		$checked = (in_array($model->term_id, $selected)) ? 'checked="true"' : '';
+		$html[] = '<div class="edit_form_line"><input type="checkbox" class="inalc-models" name="m-list[]" value="' . $model->term_id . '" '. $checked .'/>' . $model->name . '</div>';	
 	}
 	return implode("\n", $html); 
 }
