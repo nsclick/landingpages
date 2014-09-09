@@ -242,6 +242,10 @@ function nsk_scripts() {
 	}
 
 	wp_enqueue_script( 'twentyfourteen-script', get_template_directory_uri() . '/js/functions.js', array( 'jquery' ), '20140319', true );
+
+	wp_register_script ( 'angularjs', get_template_directory_uri() . '/vendor/angular/angular.js', array ( 'jquery' ), 'v1.2.10', true );
+	// wp_register_script ( 'angularjs', get_template_directory_uri() . '/vendor/angular/angular.min.js', array ( 'jquery' ), 'v1.2.10', true );
+
 }
 add_action( 'wp_enqueue_scripts', 'nsk_scripts' );
 

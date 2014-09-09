@@ -40,82 +40,124 @@ add_action( 'wp_ajax_nopriv_ns_form_servicios_submit', 'ns_form_servicios_submit
  * Formulario de Servicios
  */
 function ns_form_servicios_shortcode( $atts, $content = null) {
-	wp_enqueue_script ( 'ns_form_servicios', get_stylesheet_directory_uri() . '/js/ns_form_servicios.js', array('jquery'), '1.0' );
-	wp_localize_script( 'ns_form_servicios', 'ns_data', array( 'ajax' => admin_url( 'admin-ajax.php' ) ) );
+	$sucursales = isset ( $atts['sucursales'] ) ? explode ( ',', $atts['sucursales'] ) : null;
+	$correos 	= isset ( $atts['correos'] ) ? explode ( ',', $atts['correos'] ) : null;
+
+	wp_enqueue_script ( 'ns_form_servicios', get_stylesheet_directory_uri() . '/js/forms/servicios.js', array('jquery', 'angularjs'), '1.0', true );
+	wp_localize_script(
+		'ns_form_servicios',
+		'ns_data',
+		array(
+			'ajax' 	=> admin_url( 'admin-ajax.php' ),
+			's'		=> $sucursales,
+			'c'		=> $correos
+		)
+	);
 
 ob_start();
 ?>
 
 <?php
-$sucursales = isset ( $atts['sucursales'] ) ? explode ( ',', $atts['sucursales'] ) : null;
-$correos 	= isset ( $atts['correos'] ) ? explode ( ',', $atts['correos'] ) : null;
 
 // echo '<pre>';
 // var_dump(  );
 // echo '</pre>';
-
 ?>
 
-<div class="form_i">
-	<form id="ns_form_servicios">
-		<span class="mje_ok">Recibir&aacute;s en tu correo informaci&oacute;n completa de todos los servicios.</span>
-		<span class="mje_error">Existen errores en el formulario.</span>
+<div class="form_i" data-ng-app="ServicesFormApp">
+	<form id="ns_form_servicios" name="ns_form_servicios" data-ng-controller="FormCtrl">
+		
+		<!-- Success Message -->
+		<div data-ng-show="success" class="form-message mje_ok">
+			<p>
+				<span>Enhorabuena, tus datos han sido enviados con &eacute;xito!</span>
+				<br>
+				<span>Recibir&aacute;s en tu correo informaci&oacute;n completa de todos los servicios.</span>
+			</p>
+		</div>
+		<!--/ Success Message -->
+
+		<!-- Error Message -->
+		<div data-ng-show="_error" class="form-message mje_error">
+			<p>Oops, algo malo sucedi&oacute;. Favor intentalo m&aacute;s tarde.</p>
+		</div>
+		<!--/ Error Message -->
+
+		<!-- Name -->
 		<div class="caja">
 			<label for="nombre">Nombre:</label>
-			<input name="name" type="text"/>
+			<input id="name" name="name" type="text" data-ng-model="name" required />
+
+			<span class="help-block" data-ng-show="ns_form_servicios.name.$dirty && ns_form_servicios.name.$error.required">
+				<span>Por favor ingrese un Nombre v&aacute;lido.</span>
+			</span>
 		</div>
+		<!--/ Name -->
+
+		<!-- Email -->
 		<div class="caja">
 			<label for="email">E-mail:</label>
-			<input name="email" type="text"/>
+			<input id="email" name="email" type="email" data-ng-model="email" required />
+
+			<span class="help-block" data-ng-show="ns_form_servicios.email.$dirty && ns_form_servicios.email.$error.required">
+				<span>Por favor ingrese un correo v&aacute;lido.</span>
+			</span>
 		</div>
+		<!--/ Email -->
+
+		<!-- Phone -->
 		<div class="caja">
 			<label for="fono">Tel&eacute;fono:</label>
-			<input name="phone" type="text"/>
+			<input name="phone" type="tel" data-ng-model="phone" required data-ng-pattern="/^(\(\+\d+\)\s?)?[0-9]+$/" />
+
+			<span class="help-block" data-ng-show="ns_form_servicios.phone.$dirty && ns_form_servicios.phone.$error.required">
+				<span>Por favir digite un n&uacute;mero de tel&eacute;fono v&aacute;lido.</span>
+			</span>
 		</div>
+		<!--/ Phone -->
+
+		<!-- Sucursal -->
 		<div class="caja">
 			<label for="sucursal">Seleccione sucursal:</label>
-			<select name="location">
+			<select id="sucursal" name="sucursal"  data-ng-model="sucursal" data-ng-options="s.name for s in sucursales" required>
 				<option value="">Elije una sucursal</option>
-				<?php foreach ( $sucursales as $sucursal ): ?>
-					<option value="<?php echo strtolower ( $sucursal ); ?>"><?php echo $sucursal; ?></option>
-				<?php endforeach; ?>
 			</select>
+
+			<span data-ng-show="ns_form_servicios.sucursal.$dirty && !ns_form_servicios.sucursal.$valid" class="help-block help-invalid">
+				<i class="icon icon-cancel"></i>
+				<span>Por favor selecciona una sucursal</span>
+			</span>
 		</div>
+		<!--/ Sucursal -->
+
+		<!-- Comments -->
 		<div class="caja">
-			<label for="comentarios">Comentarios:
+			<label for="comentarios">
+				<span>Comentarios:</span>
 				<br/>
-				<b>(Opcional)</b></label>
-			<textarea name="comments"></textarea>
+				<b>(Opcional)</b>
+			</label>
+			<textarea id="comentarios" name="comments" data-ng-model="comments"></textarea>
 		</div>
+		<!--/ Comments -->
+
+		<!-- Submit Button -->
 		<div class="btn_send">
 			<p>
-				* Al cotizar tienes la opcion de realizar un <img src="/landingpages/wp-content/themes/nskameleon/images/testdrive.png" alt="Test Drive" title="Test Drive" />
+				<span>* Al cotizar tienes la opcion de realizar un </span>
+				<img src="/landingpages/wp-content/themes/nskameleon/images/testdrive.png" alt="Test Drive" title="Test Drive" />
 			</p>
-			<input type="submit" value="Enviar">
+
+			<button type="submit" data-ng-disabled="sending" data-ng-click="submit()" class="btn">
+				<span data-ng-if="!sending">Enviar</span>
+				<span data-ng-if="sending">Enviando...</span>
+			</button>
+
 			<div class="divclear">
 				&nbsp;
 			</div>
 		</div>
-
-		<?php
-			if ( !empty ( $correos ) ) :
-				foreach ( $correos as $correo ) :
-		?>
-				<input type="hidden" name="c[]" value="<?php echo $correo; ?>" />
-		<?php
-				endforeach;
-			endif;
-		?>
-
-		<?php
-			if ( !empty ( $sucursales ) ) :
-				foreach ( $sucursales as $sucursal ) :
-		?>
-				<input type="hidden" name="s[]" value="<?php echo $sucursal; ?>" />
-		<?php
-				endforeach;
-			endif;
-		?>
+		<!--/ Submit Button -->
 
 		<!-- Special Fields -->
 		<?php

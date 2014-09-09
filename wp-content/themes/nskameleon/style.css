@@ -4241,12 +4241,13 @@ h2.subt{margin:0 20px;padding:20px 0;color:#004378}
 .form_i .autos .auto1 a span{display:block;position:absolute;top:50%;margin-top:-10px}
 .btn_send{text-align:right}
 .btn_send p{width:70%;display:inline-block;margin:0}
-.btn_send input{width:auto;color:#fff;padding:9px 40px 9px 20px;display:inline-block;margin-left:15px;background:url(images/ico-arrowright.png),url(images/bg-enviar.png);background-position:90px 10px,top center;background-repeat:no-repeat,repeat-x;border:0}
+.btn_send input, .btn_send .btn{width:auto;color:#fff;padding:9px 40px 9px 20px;display:inline-block;margin-left:15px;background:url(images/ico-arrowright.png),url(images/bg-enviar.png);background-position:90px 10px,top center;background-repeat:no-repeat,repeat-x;border:0}
 .entry-content{width:980px;margin:0 auto;padding:0}
 .selector{margin:20px;height:654px;padding:0 10px 0 0;overflow-y:scroll}
 .selector .auto{border:1px solid #e8e8e8;padding:10px;background:url(images/bg-input2.png) top center repeat-x;display:table;margin-bottom:10px}
 .selector .auto .foto{width:30%;height:70px;background:#fff;border:1px solid #eee;padding:5px;display:table-cell;vertical-align:middle}
-.selector .auto .foto img{vertical-align:middle;max-width:100%;width:82px}
+.selector .auto .foto img{vertical-align:middle;max-width:100%;width:82px}
+
 .selector .auto .texto{display:table-cell;vertical-align:middle;width:40%;font-size:12px;padding:0 10px;color:#fba919;line-height:normal}
 .selector .auto .texto b,.selector .auto .texto span{display:block}
 .selector .auto .texto span b{display:inline;font-weight:bold}
