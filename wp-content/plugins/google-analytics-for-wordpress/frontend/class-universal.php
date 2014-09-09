@@ -9,15 +9,18 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		public $link_regex;
 
 		public function __construct() {
-			$this->link_regex = '/<a (.*?)href=[\'\"](.*?):\/*([^\'\"]+?)[\'\"](.*?)>(.*?)<\/a>/i';
+			$this->link_regex = '`<a (.*?)href=[\'\"](.*?):/*([^\'\"]+)[\'\"](.*?)>(.*?)</a>`i';
 
 			add_action( 'wp_head', array( $this, 'tracking' ), 8 );
 
-			// Check for outbound option
-			add_filter( 'the_content', array( $this, 'the_content' ), 99 );
-			add_filter( 'widget_text', array( $this, 'widget_content' ), 99 );
-			add_filter( 'the_excerpt', array( $this, 'the_content' ), 99 );
-			add_filter( 'comment_text', array( $this, 'comment_text' ), 99 );
+			$options  = parent::$options['ga_general'];
+			if ( $options['track_outbound'] == 1 ) {
+				// Check for outbound option
+				add_filter( 'the_content', array( $this, 'the_content' ), 99 );
+				add_filter( 'widget_text', array( $this, 'widget_content' ), 99 );
+				add_filter( 'the_excerpt', array( $this, 'the_content' ), 99 );
+				add_filter( 'comment_text', array( $this, 'comment_text' ), 99 );
+			}
 		}
 
 		/**
@@ -26,18 +29,10 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		 * @todo, add the tracking code and remove this test output
 		 */
 		public function tracking() {
-			global $wp_query, $current_user;
-
-			// Make sure $current_user is filled.
-			get_currentuserinfo();
+			global $wp_query;
 
 			$options  = parent::$options['ga_general'];
-			$gaq_push = array();
 
-			/**
-			 * The order of custom variables is very, very important: custom vars should always take up the same slot to make analysis easy.
-			 */
-			$customvarslot = 1;
 			if ( $this->do_tracking() && ! is_preview() ) {
 				$gaq_push = array();
 
@@ -123,8 +118,7 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 				} else {
 					require( GAWP_PATH . 'frontend/views/tracking_universal.php' );
 				}
-			}
-			else{
+			} else {
 				require( GAWP_PATH . 'frontend/views/tracking_usergroup.php' );
 			}
 		}
@@ -132,12 +126,20 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		/**
 		 * Ouput tracking link
 		 *
-		 * @param $link
+		 * @param string $label
+		 * @param array  $matches
 		 *
 		 * @return mixed
 		 */
-		private function output_parse_link( $link ) {
-			$onclick  = NULL;
+		private function output_parse_link( $label, $matches ) {
+			$link = $this->get_target( $label, $matches );
+
+			// bail early for links that we can't handle
+			if ( is_null( $link['type'] ) || 'internal' === $link['type'] ) {
+				return $matches[0];
+			}
+
+			$onclick  = null;
 			$options  = $this->get_options();
 			$options  = $options['ga_general'];
 			$full_url = $this->make_full_url( $link );
@@ -162,22 +164,19 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 						$label = 'int';
 					}
 
-					$onclick = "ga('send', 'event', '" . esc_attr( $link['category'] ) . "-" .esc_attr ( $label ) . "', '" . esc_attr( $full_url ) . "', '" . esc_attr ( strip_tags( $link['link_text'] ) ) . "');";
-
-					break;
-				case 'internal':
-					$onclick = NULL;
+					$onclick = "ga('send', 'event', '" . esc_attr( $link['category'] ) . "-" . esc_attr( $label ) . "', '" . esc_attr( $full_url ) . "', '" . esc_attr( strip_tags( $link['link_text'] ) ) . "');";
 
 					break;
 				case 'outbound':
 					if ( $options['track_outbound'] == 1 ) {
-						$onclick = "ga('send', 'event', '" . esc_attr ( $link['category'] ) . "', '" . esc_attr( $full_url ) . "', '" . esc_attr( strip_tags( $link['link_text'] ) ) . "');";
+						$onclick = "ga('send', 'event', '" . esc_attr( $link['category'] ) . "', '" . esc_attr( $full_url ) . "', '" . esc_attr( strip_tags( $link['link_text'] ) ) . "');";
 					}
 
 					break;
 			}
 
 			$link['link_attributes'] = $this->output_add_onclick( $link['link_attributes'], $onclick );
+
 			return '<a href="' . $full_url . '" ' . $link['link_attributes'] . '>' . $link['link_text'] . '</a>';
 
 		}
@@ -190,7 +189,7 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		 * @return mixed
 		 */
 		public function parse_article_link( $matches ) {
-			return $this->output_parse_link( $this->get_target( 'outbound-article', $matches ) );
+			return $this->output_parse_link( 'outbound-article', $matches );
 		}
 
 		/**
@@ -201,7 +200,7 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		 * @return mixed
 		 */
 		public function parse_comment_link( $matches ) {
-			return $this->output_parse_link( $this->get_target( 'outbound-comment', $matches ) );
+			return $this->output_parse_link( 'outbound-comment', $matches );
 		}
 
 		/**
@@ -212,7 +211,7 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		 * @return mixed
 		 */
 		public function parse_widget_link( $matches ) {
-			return $this->output_parse_link( $this->get_target( 'outbound-widget', $matches ) );
+			return $this->output_parse_link( 'outbound-widget', $matches );
 		}
 
 		/**
@@ -223,7 +222,7 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		 * @return mixed
 		 */
 		public function parse_nav_menu( $matches ) {
-			return $this->output_parse_link( $this->get_target( 'outbound-menu', $matches ) );
+			return $this->output_parse_link( 'outbound-menu', $matches );
 		}
 
 		/**
@@ -269,8 +268,9 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		 * @return mixed
 		 */
 		public function nav_menu( $text ) {
-			if ( ! $this->do_tracking() )
+			if ( ! $this->do_tracking() ) {
 				return $text;
+			}
 
 			if ( ! is_feed() ) {
 				$text = preg_replace_callback( $this->link_regex, array( $this, 'parse_nav_menu' ), $text );
@@ -287,8 +287,9 @@ if ( ! class_exists( 'Yoast_GA_Universal' ) ) {
 		 * @return mixed
 		 */
 		public function comment_text( $text ) {
-			if ( ! $this->do_tracking() )
+			if ( ! $this->do_tracking() ) {
 				return $text;
+			}
 
 			if ( ! is_feed() ) {
 				$text = preg_replace_callback( $this->link_regex, array( $this, 'parse_comment_link' ), $text );
