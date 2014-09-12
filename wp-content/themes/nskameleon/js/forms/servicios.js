@@ -1,8 +1,13 @@
-(function (window, angular, $, data, undefined) {
+(function (window, angular, $, d, undefined) {
+
+	var data = angular.fromJson (d.data);
+	console.log(data);
 
 	angular.module ('ServicesFormApp', [])
 
-
+		/**
+		 * FormCtrl
+		 */
 		.controller ('FormCtrl', [
 			'$scope',
 			function ($scope) {
@@ -16,14 +21,11 @@
 				$scope.sent 		= false;
 				$scope.sucursales 	= [];
 				$scope.emails 		= [];
-					angular.extend ($scope.emails, data.c);
-
-				angular.forEach (data.s, function (dSucursal) {
-					$scope.sucursales.push({
-						name: 	dSucursal,
-						value: 	dSucursal
-					});
-				});
+				$scope.pixels 		= [];
+				
+				angular.extend ($scope.emails, data.recipients);
+				angular.extend ($scope.sucursales, data.sucursales);
+				angular.extend ($scope.pixels, data.pixels);
 
 				$scope.submit = function () {
 					$scope.sending = true;

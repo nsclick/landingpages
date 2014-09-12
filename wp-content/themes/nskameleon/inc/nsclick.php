@@ -5,16 +5,21 @@
  * */
 function include_php_files($dir){
 	
-	$files = scandir($dir); // returns array of files, sorted alphabetically
+	$files 	= scandir($dir); // returns array of files, sorted alphabetically
+	$_files = array();
 
 	foreach($files as $file) {
 		$filename = $dir.DIRECTORY_SEPARATOR.$file;
 		if(is_file($filename)) {
 			$file_parts = pathinfo($filename);
-			if($file_parts['extension'] == 'php')
-			include $dir. DIRECTORY_SEPARATOR . $file;
+			if($file_parts['extension'] == 'php') {
+				include $dir. DIRECTORY_SEPARATOR . $file;
+				$_files[] = $file;
+			}
 		}
 	}
+
+	return $_files;
 }
 
 /**
@@ -91,7 +96,7 @@ function get_permalink_by_slug( $slug ){
 
 
 function get_models(){
-	$mydb = new wpdb('chevroletinalco','nsdev','chevroletinalco','localhost');
+	$mydb = new wpdb('root','luiscarlosjayk','inalcosite_dev','localhost');
 	$rows = $mydb->get_results("SELECT t.*,o.option_value FROM wp_terms t, wp_options o WHERE t.term_id IN (SELECT term_id FROM wp_term_taxonomy where taxonomy = 'Modelo') AND t.term_id=o.option_name ORDER BY t.name");
 	
 	array_walk($rows, 'models_unserialize');
