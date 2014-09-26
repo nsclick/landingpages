@@ -1,7 +1,8 @@
 (function (window, angular, $, undefined) {
-	var a, // Actions
-		m, // Models
-		d; // Data
+	var a, 		// Actions
+		m, 		// Models
+		d, 		// Data
+		postId; // PostId
 
 	angular.module ('ServiciosAdminForm', [])
 
@@ -43,7 +44,7 @@
 				if (!Data.value.hasOwnProperty ('crm'))
 					Data.value.crm = false;
 
-				console.log(Data.value);
+				// console.log(Data.value);
 			}
 		])
 
@@ -72,7 +73,7 @@
 				}
 			}
 		])
-
+		
 		/**
 		 * Models
 		 */
@@ -87,6 +88,19 @@
 		])
 
 		/**
+		 * PostId
+		 */
+		.service ('PostId', [
+			function() {
+				try {
+					this.value = postId;
+				} catch (e) {
+					this.value = null;
+				}
+			}
+		])
+
+		/**
 		 * ServiciosForm Controller
 		 */
 		.controller ('ServiciosFormCtrl', [
@@ -94,7 +108,8 @@
 			'Data',
 			'Actions',
 			'Models',
-			function ($scope, Data, Actions, Models) {
+			'PostId',
+			function ($scope, Data, Actions, Models, PostId) {
 				$scope.debug  		= true;
 				$scope.sucursal 	= null;
 				$scope.action  		= null;
@@ -102,7 +117,7 @@
 				$scope.actions 	 	= Actions.value;
 				$scope.models 		= Models.value;
 				$scope.result 		= btoa (angular.toJson ($scope.data) );
-
+				
 				angular.forEach ($scope.actions, function (action, index) {
 					if (!!$scope.data.action)
 					if (action.name == $scope.data.action.name)
@@ -132,16 +147,31 @@
 
 				$scope.addPixel = function () {
 					var newPixel = {
-						code: $scope.pixel
+						code: 		$scope.pixel,
+						paramName: 	$scope.pixelParamName,
+						paramValue: $scope.pixelParamValue
 					};
 					$scope.data.pixels.unshift (newPixel);
-					$scope.pixel = null;
+					$scope.pixel 			= null;
+					$scope.pixelParamName 	= null;
+					$scope.pixelParamValue 	= null;
 					$scope.updateData ();
 				};
 
 				$scope.removePixel = function (index) {
 					$scope.data.pixels.splice (index, 1);
 					$scope.updateData ();
+				};
+				
+				$scope.addFixedRecipient = function () {
+					$scope.data.recipients.unshift ($scope.fixedRecipient);
+					$scope.fixedRecipient = null;
+					$scope.updateData ();
+				};
+				
+				$scope.removeFixedRecipient = function (index) {
+					$scope.data.recipients.splice (index, 1);
+					$scope.updateData();
 				};
 
 				$scope.$watch ('data.crm', function (newVal, oldVal) {
@@ -166,7 +196,7 @@
 
 				$scope.updateData = function () {
 					$scope.result = btoa (angular.toJson ($scope.data) );
-					console.log ('HERE: ', $scope.data);
+					console.log ('Update: ', $scope.data);
 				};
 
 				$scope.checkModelSelection = function ($index, m) {
@@ -178,6 +208,17 @@
 						delete ($scope.data.models[termId]);
 
 					$scope.updateData ();
+				};
+				
+				$scope.selectAllModelsSelection = function (selectAll) {
+					if (selectAll)
+						angular.forEach ($scope.models, function (m) {
+							$scope.data.models[m.term_id] = true;
+						});
+					else
+						$scope.data.models = {};
+					
+					$scope.updateData();
 				};
 
 			}
@@ -210,6 +251,7 @@
 				$scope.addRecipient = function () {
 					$scope.s.recipients.unshift ($scope.recipient);
 					$scope.updateData ();
+					$scope.recipient = null;
 				};
 
 				$scope.removeRecipient = function (index) {
@@ -220,6 +262,7 @@
 				$scope.addCc = function () {
 					$scope.s.ccs.unshift ($scope.cc);
 					$scope.updateData ();
+					$scope.cc = null;
 				};
 
 				$scope.removeCc = function (index) {
@@ -239,7 +282,8 @@
 		var formWrapper = angular.element (document.querySelector ('#ns_servicios_admin_form'));
 		a  				= formWrapper.attr ('data-actions'),
 		m  				= formWrapper.attr ('data-models'),
-		d 				= formWrapper.attr ('data-value');
+		d 				= formWrapper.attr ('data-value'),
+		postId 			= angular.element (document.querySelector ('#post_ID')).val();
 
 		angular.bootstrap (formWrapper, ['ServiciosAdminForm']);
 	});

@@ -6,17 +6,27 @@
  * Formulario de Servicios
  */
 function ns_form_servicios_shortcode( $atts, $content = null) {
-	$data = base64_decode ( $atts['servicios_form_config'] );
+	if ( !isset ( $atts['servicios_form_config'] ) ) {
+	 	$atts['servicios_form_config'] = '';
+	 }
 
-	wp_enqueue_script ( 'ns_form_servicios', get_stylesheet_directory_uri() . '/js/forms/servicios.js', array('jquery', 'angularjs'), '1.0', true );
-	wp_localize_script(
-		'ns_form_servicios',
-		'ns_data',
-		array(
-			'ajax' 	=> admin_url( 'admin-ajax.php' ),
-			'data'	=> $data
-		)
-	);
+	 try {
+	 	$data = base64_decode ( $atts['servicios_form_config'] );
+	 } catch (Exception $e) {
+	 	$data = "{}";
+	 }
+
+	 wp_enqueue_script ( 'angularjs.ngSanitize', get_stylesheet_directory_uri() . '/vendor/angular/angular-sanitize.js', array('angularjs'));
+	 wp_enqueue_script ( 'ns_form_servicios', get_stylesheet_directory_uri() . '/js/forms/servicios.js', array('jquery', 'angularjs'), '1.0', false );
+	 wp_localize_script(
+	 	'ns_form_servicios',
+	 	'ns_data',
+	 	array(
+	 		'ajax' 		=> admin_url( 'admin-ajax.php' ),
+	 		'data'		=> $data,
+	 		'models'	=> get_models()
+	 	)
+	 );
 
 ob_start();
 
@@ -25,7 +35,7 @@ ob_start();
 // echo '</pre>';
 ?>
 
-<div class="form_i" data-ng-app="ServicesFormApp">
+<div class="form_i asd" data-ng-app="ServicesFormApp" data-ng-cloak>
 	<form id="ns_form_servicios" name="ns_form_servicios" data-ng-controller="FormCtrl">
 		
 		<!-- Success Message -->
@@ -40,85 +50,172 @@ ob_start();
 
 		<!-- Error Message -->
 		<div data-ng-show="_error" class="form-message mje_error">
-			<p>Oops, algo malo sucedi&oacute;. Favor intentalo m&aacute;s tarde.</p>
+			<p>Oops, algo malo sucedi&oacute;. Por favor int&eacute;ntalo m&aacute;s tarde.</p>
 		</div>
 		<!--/ Error Message -->
-
-		<!-- Name -->
-		<div class="caja">
-			<label for="nombre">Nombre:</label>
-			<input id="name" name="name" type="text" data-ng-model="name" required />
-
-			<span class="help-block" data-ng-show="ns_form_servicios.name.$dirty && ns_form_servicios.name.$error.required">
-				<span>Por favor ingrese un Nombre v&aacute;lido.</span>
-			</span>
-		</div>
-		<!--/ Name -->
-
-		<!-- Email -->
-		<div class="caja">
-			<label for="email">E-mail:</label>
-			<input id="email" name="email" type="email" data-ng-model="email" required />
-
-			<span class="help-block" data-ng-show="ns_form_servicios.email.$dirty && ns_form_servicios.email.$error.required">
-				<span>Por favor ingrese un correo v&aacute;lido.</span>
-			</span>
-		</div>
-		<!--/ Email -->
-
-		<!-- Phone -->
-		<div class="caja">
-			<label for="fono">Tel&eacute;fono:</label>
-			<input name="phone" type="tel" data-ng-model="phone" required data-ng-pattern="/^(\(\+\d+\)\s?)?[0-9]+$/" />
-
-			<span class="help-block" data-ng-show="ns_form_servicios.phone.$dirty && ns_form_servicios.phone.$error.required">
-				<span>Por favir digite un n&uacute;mero de tel&eacute;fono v&aacute;lido.</span>
-			</span>
-		</div>
-		<!--/ Phone -->
-
-		<!-- Sucursal -->
-		<div class="caja">
-			<label for="sucursal">Seleccione sucursal:</label>
-			<select id="sucursal" name="sucursal"  data-ng-model="sucursal" data-ng-options="s.name for s in sucursales" required>
-				<option value="">Elije una sucursal</option>
-			</select>
-
-			<span data-ng-show="ns_form_servicios.sucursal.$dirty && !ns_form_servicios.sucursal.$valid" class="help-block help-invalid">
-				<i class="icon icon-cancel"></i>
-				<span>Por favor selecciona una sucursal</span>
-			</span>
-		</div>
-		<!--/ Sucursal -->
-
-		<!-- Comments -->
-		<div class="caja">
-			<label for="comentarios">
-				<span>Comentarios:</span>
-				<br/>
-				<b>(Opcional)</b>
-			</label>
-			<textarea id="comentarios" name="comments" data-ng-model="comments"></textarea>
-		</div>
-		<!--/ Comments -->
-
-		<!-- Submit Button -->
-		<div class="btn_send">
-			<p>
-				<span>* Al cotizar tienes la opcion de realizar un </span>
-				<img src="/landingpages/wp-content/themes/nskameleon/images/testdrive.png" alt="Test Drive" title="Test Drive" />
-			</p>
-
-			<button type="submit" data-ng-disabled="sending" data-ng-click="submit()" class="btn">
-				<span data-ng-if="!sending">Enviar</span>
-				<span data-ng-if="sending">Enviando...</span>
-			</button>
-
-			<div class="divclear">
-				&nbsp;
+		
+		<!-- Form Wrapper --> 
+		<div data-ng-show="!sent">	
+			
+			<div data-ng-if="isCrm">
+				<!-- Models -->
+				<div class="selector">
+					
+					<!-- Car Model -->
+					<div class="auto" data-ng-repeat="m in models">
+						<div class="foto" data-ng-if="showPhoto">
+							<img src="{foto}" alt="" title="" />
+						</div>
+						<div class="texto">
+							<b>{{m.name}}</b>
+							<span data-ng-if="showPrice">Desde <b>{{m.option_value.precio_desde | price : '$ '}}</b></span>
+						</div>
+						<div class="switcher">
+							<div class="onoffswitch">
+								<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch{{$index}}" data-ng-model="m.state" data-ng-change="toggleModel(m, $index)" >
+								<label class="onoffswitch-label" for="myonoffswitch{{$index}}">
+									<span class="onoffswitch-inner">
+										<span class="onoffswitch-active">
+											<span class="onoffswitch-switch">
+												<img src="<?php echo get_template_directory_uri(); ?>/images/ico-yes.png" alt="Inalco" title="Inalco" />
+											</span>
+										</span>
+										<span class="onoffswitch-inactive">
+											<span class="onoffswitch-switch">
+												<img src="<?php echo get_template_directory_uri(); ?>/images/ico-arrowright.png" alt="Inalco" title="Inalco" />
+											</span>
+										</span>
+									</span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<!--/ Car Model -->
+					
+				</div>
+			<!--/ Models -->
 			</div>
+			
+			<!-- Name -->
+			<div class="caja">
+				<label for="nombre">Nombre:</label>
+				<input id="name" name="firstname" type="text" data-ng-model="firstname" required />
+	
+				<span class="help-block" data-ng-show="ns_form_servicios.firstname.$dirty && ns_form_servicios.firstname.$error.required">
+					<span>Por favor ingrese un Nombre.</span>
+				</span>
+			</div>
+			<!--/ Name -->
+			
+			<!-- LastName -->
+			<div class="caja">
+				<label for="nombre">Apellidos:</label>
+				<input id="name" name="lastname" type="text" data-ng-model="lastname" required />
+	
+				<span class="help-block" data-ng-show="ns_form_servicios.lastname.$dirty && ns_form_servicios.lastname.$error.required">
+					<span>Por favor ingrese un Apellido.</span>
+				</span>
+			</div>
+			<!--/ LastName -->
+			
+			<!-- Rut -->
+			<div class="caja" data-ng-if="isCrm">
+				<label for="rut">Rut:</label>
+				<input id="rut" name="rut" type="text" data-ng-model="$parent.rut" required />
+	
+				<span class="help-block" data-ng-show="ns_form_servicios.rut.$dirty && ns_form_servicios.rut.$error.required">
+					<span>Por favor ingrese su Rut.</span>
+				</span>
+			</div>
+			<!--/ Rut -->
+	
+			<!-- Email -->
+			<div class="caja">
+				<label for="email">E-mail:</label>
+				<input id="email" name="email" type="email" data-ng-model="email" required />
+	
+				<span class="help-block" data-ng-show="ns_form_servicios.email.$dirty && ns_form_servicios.email.$error.required">
+					<span>Por favor ingrese un correo v&aacute;lido.</span>
+				</span>
+			</div>
+			<!--/ Email -->
+	
+			<!-- Phone -->
+			<div class="caja">
+				<label for="fono">Tel&eacute;fono:</label>
+				<input name="phone" type="tel" data-ng-model="phone" required data-ng-pattern="/^(\(\+\d+\)\s?)?[0-9]+$/" />
+	
+				<span class="help-block" data-ng-show="ns_form_servicios.phone.$dirty && ns_form_servicios.phone.$error.required">
+					<span>Por favir digite un n&uacute;mero de tel&eacute;fono v&aacute;lido.</span>
+				</span>
+			</div>
+			<!--/ Phone -->
+	
+			<!-- Sucursal -->
+			<div class="caja" data-ng-if="sucursales.length > 0">
+				<label for="sucursal">Seleccione sucursal:</label>
+				<select id="sucursal" name="sucursal"  data-ng-model="$parent.sucursal" data-ng-options="s.name for s in sucursales" required>
+					<option value="">Elije una sucursal</option>
+				</select>
+	
+				<span data-ng-show="ns_form_servicios.sucursal.$dirty && !ns_form_servicios.sucursal.$valid" class="help-block help-invalid">
+					<i class="icon icon-cancel"></i>
+					<span>Por favor selecciona una sucursal</span>
+				</span>
+			</div>
+			<!--/ Sucursal -->
+	
+			<!-- Comments -->
+			<div class="caja">
+				<label for="comentarios">
+					<span>Comentarios:</span>
+					<br/>
+					<b>(Opcional)</b>
+				</label>
+				<textarea id="comentarios" name="comments" data-ng-model="comments"></textarea>
+			</div>
+			<!--/ Comments -->
+			
+			<div data-ng-if="isCrm">
+			<!-- Selected Models -->
+				<div class="caja">
+					<label for="autos">Autos seleccionados:</label>
+					<div class="autos">
+						<div class="auto1" data-ng-repeat="m in selectedModels">
+							<span>{{m.name}}</span>
+							<a href="#" data-ng-click="toggleModel(m, $index, false)"><span>x</span></a>
+						</div>
+					</div>
+				</div>
+			<!--/ Selected Models -->
+			</div>
+	
+			<!-- Submit Button -->
+			<div class="btn_send">
+				<p>
+					<span>* Al cotizar tienes la opcion de realizar un </span>
+					<img src="/landingpages/wp-content/themes/nskameleon/images/testdrive.png" alt="Test Drive" title="Test Drive" />
+				</p>
+	
+				<button type="submit" data-ng-disabled="sending" data-ng-click="submit()" class="btn">
+					<span data-ng-if="!sending">Enviar</span>
+					<span data-ng-if="sending">Enviando...</span>
+				</button>
+	
+				<div class="divclear">
+					&nbsp;
+				</div>
+			</div>
+			<!--/ Submit Button -->
+			
 		</div>
-		<!--/ Submit Button -->
+		<!--/ Form Wrapper -->
+		
+		<!-- Pixels -->
+		<div data-ng-repeat="p in pixels" data-ng-if="p.visible">
+			<div data-ng-bind-html="p.code"></div>
+		</div>
+		<!--/ Pixels -->
 
 		<input type="hidden" name="title" value="<?php the_title(); ?>" />
 
@@ -133,7 +230,7 @@ function ns_form_servicios_field_shortcode ( $settings, $value ) {
 
 	// Include Shortcode Actions Files
 	$actions_dir 	= get_template_directory() . DIRECTORY_SEPARATOR . "actions";
-	$actions_list 	= include_php_files ( $actions_dir );
+	$actions_list 	= list_php_files ( $actions_dir );
 	$actions 		= array();
 	$models 		= get_models();
 	foreach ( $actions_list as $action_listed ) {
@@ -148,14 +245,14 @@ function ns_form_servicios_field_shortcode ( $settings, $value ) {
     $dependency 	= vc_generate_dependencies_attributes($settings);
     ob_start();
 
-    // echo '<pre>';
-    // print_r ($models);
-    // echo '</pre>';
+//    echo '<pre>';
+//    print_r (the_ID());
+//    echo '</pre>';
 ?>
 	<div id="ns_servicios_admin_form" data-ng-cloak data-value='<?php echo $value; ?>' data-actions='<?php echo base64_encode ( json_encode ( $actions ) ); ?>' data-models="<?php echo base64_encode ( json_encode ( $models ) ); ?>">
 
 		<form name="ns_servicios_form" data-ng-controller="ServiciosFormCtrl">
-
+			
 			<!-- CRM -->
 			<div class="from-group">
 				<label>Conectar con CRM</label>
@@ -204,6 +301,10 @@ function ns_form_servicios_field_shortcode ( $settings, $value ) {
 
 				<div class="form-group">
 					<ul>
+						<li>
+							<button type="button" data-ng-click="selectAllModelsSelection(true)" >Seleccionar todos</button>
+							<button type="button" data-ng-click="selectAllModelsSelection(false)">Remover todos</button>
+						</li>
 						<li data-ng-repeat="m in models track by m.term_id">
 							<input type="checkbox" data-ng-model="modelSelected" data-ng-change="checkModelSelection($index, modelSelected)" data-ng-checked="data.models.hasOwnProperty(m.term_id)">
 							<span>{{m.name}}</span>
@@ -238,14 +339,14 @@ function ns_form_servicios_field_shortcode ( $settings, $value ) {
 							<ul>
 								<li data-ng-repeat="r in s.recipients track by $index">
 									<span>{{r}}</span>
-									<button type="button" data-ng-click="removeRecipient(s, $index)">Remover</button>
+									<button type="button" data-ng-click="removeRecipient($index)">Remover</button>
 								</li>
 							</ul>
 
 							<ul>
 								<li data-ng-repeat="c in s.ccs track by $index">
 									<span>{{c}}</span>
-									<button type="button" data-ng-click="removeCC($index)">Remover</button>
+									<button type="button" data-ng-click="removeCc($index)">Remover</button>
 								</li>
 							</ul>
 
@@ -261,13 +362,17 @@ function ns_form_servicios_field_shortcode ( $settings, $value ) {
 			<!-- Pixels -->
 			<div class="form-group">
 				<label>Pixels</label>
-				<input type="text" name="pixel" data-ng-model="pixel" class="wpb_vc_param_value wpb-textinput text textfield">
+				<input type="text" name="pixel" data-ng-model="pixel">
+				<input type="text" data-ng-model="pixelParamName" />
+				<input type="text" data-ng-model="pixelParamValue" />
 				<button type="button" data-ng-click="addPixel()">Agregar</button>
 
 				<div>
 					<ul>
 						<li data-ng-repeat="p in data.pixels">
 							<span>{{p.code}}</span>
+							<span>{{p.paramName}}</span>
+							<span>{{p.paramValue}}</span>
 
 							<button type="button" data-ng-click="removePixel($index)">Eliminar</button>
 						</li>
@@ -275,6 +380,23 @@ function ns_form_servicios_field_shortcode ( $settings, $value ) {
 				</div>
 			</div>
 			<!--/ Pixels -->
+			
+			<!-- Fixed Recipients -->
+			<div class="form-group">
+				<label>Destinatarios Fijos</label>
+				<input type="email" name="fixedRecipient" data-ng-model="fixedRecipient" />
+				<button type="button" data-ng-click="addFixedRecipient()" >Agregar</button>
+				
+				<div>
+					<ul>
+						<li data-ng-repeat="fr in data.recipients">
+							<span>{{fr}}</span>
+							<button type="button" data-ng-click="removeFixedRecipient($index)">Remover</button>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!--/ Fixed Recipients -->
 
 			<!-- Debug -->
 			<div data-ng-if="debug">

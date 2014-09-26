@@ -4,6 +4,19 @@
  * include_once for php files within dir
  * */
 function include_php_files($dir){
+	$files = list_php_files ( $dir );
+	
+	foreach ( $files as $file ) {		
+		include $dir . DIRECTORY_SEPARATOR . $file ;
+	}
+
+	return $_files;
+}
+
+/**
+ * Get list of php files within a dir
+ */
+function list_php_files ( $dir ){
 	
 	$files 	= scandir($dir); // returns array of files, sorted alphabetically
 	$_files = array();
@@ -13,7 +26,6 @@ function include_php_files($dir){
 		if(is_file($filename)) {
 			$file_parts = pathinfo($filename);
 			if($file_parts['extension'] == 'php') {
-				include $dir. DIRECTORY_SEPARATOR . $file;
 				$_files[] = $file;
 			}
 		}
@@ -31,6 +43,15 @@ function nsk_shortcodes_init() {
 }
 add_action( 'init', 'nsk_shortcodes_init');
 
+
+/**
+ * Register actions
+ */
+function nsk_actions_init () {
+	$actions_dir 	= get_template_directory() . DIRECTORY_SEPARATOR . "actions";
+	$actions_list 	= include_php_files ( $actions_dir );
+}
+add_action ( 'init', 'nsk_actions_init' );
 
 /**
  * Register shortcodes
@@ -96,7 +117,9 @@ function get_permalink_by_slug( $slug ){
 
 
 function get_models(){
-	$mydb = new wpdb('root','luiscarlosjayk','inalcosite_dev','localhost');
+//	return array ();
+
+	$mydb = new wpdb ( 'devnscli_luis',']7J,(0s&#z4h','devnscli_inalco_generadorlandings_modelos','localhost' );
 	$rows = $mydb->get_results("SELECT t.*,o.option_value FROM wp_terms t, wp_options o WHERE t.term_id IN (SELECT term_id FROM wp_term_taxonomy where taxonomy = 'Modelo') AND t.term_id=o.option_name ORDER BY t.name");
 	
 	array_walk($rows, 'models_unserialize');

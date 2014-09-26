@@ -46,7 +46,7 @@ class Crm{
 		
 		$data['products'] = $n_products;
 		
-		//echo $this->url . '?' . http_build_query($data);die();
+		echo $this->url . '?' . http_build_query($data);die();
 		$result = _curl($this->url, http_build_query($data));
 		
 		$result = json_decode($result);
@@ -72,16 +72,16 @@ class Crm{
 function send_quote($data){
 		
 	$crmBind = array(
-		'lead_source' 					=> $data["source"] ? $data["source"] : 'landing' ,
-		'rut' 							=> str_replace(array('.', ',',' ', '-', '_', '/'), '', $data["rut"]),
+		'lead_source' 					=> isset ( $data["source"] ) && !empty ( $data["source"] ) ? $data["source"] : 'landing' ,
+		'rut' 							=> str_replace (array ( '.', ',',' ', '-', '_', '/' ), '', $data["rut"] ),
 		'email' 						=> $data["email"],
 		'telefono' 						=> $data["telefono"],
 		'como_nos_conocio' 				=> 'Landing Page',
 		'name' 							=> $data["nombre"],
-		'comentarios_datos_personales' 	=> $data["comentario"],	
+		'comentarios_datos_personales' 	=> $data["comentario"],
 		'products' 						=> $data["products"]
 	);
-		
+	
 	$crm = new Crm;
 	return $crm->send_quote($crmBind);
 }
