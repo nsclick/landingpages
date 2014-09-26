@@ -2,7 +2,20 @@
 
 	var data 	= angular.fromJson (d.data),
 		models	= d.models;
-	console.log(data);
+	
+	angular.forEach (models, function (model) {
+		var fotos 		= model.option_value.fotos,
+			fotoBlanca;
+		
+		angular.forEach (fotos, function (foto) {
+			if (foto.type == 'fondo_blanco')
+				fotoBlanca = foto.url;
+		});
+		
+		model.foto = fotoBlanca;
+	});
+	
+	console.log(data, models);
 
 	angular.module ('ServicesFormApp', ['ngSanitize'])
 
@@ -28,6 +41,7 @@
 				$scope.emails 			= [];
 				$scope.pixels 			= [];
 				$scope.models 			= [];
+				$scope.photoServer 		= data.hasOwnProperty('photoServer') ? data.photoServer : '';
 				
 				// Fields Models
 				$scope.firstname 		= null;

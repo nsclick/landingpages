@@ -64,7 +64,7 @@ ob_start();
 					<!-- Car Model -->
 					<div class="auto" data-ng-repeat="m in models">
 						<div class="foto" data-ng-if="showPhoto">
-							<img src="{foto}" alt="" title="" />
+							<img data-ng-src="{{photoServer}}{{m.foto}}" alt="{{m.name}}" title="{{m.name}}" />
 						</div>
 						<div class="texto">
 							<b>{{m.name}}</b>
