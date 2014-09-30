@@ -5,7 +5,7 @@
 /**
  * Formulario de Servicios
  */
-function ns_form_servicios_shortcode( $atts, $content = null) {
+function ns_form_shortcode( $atts, $content = null) {
 	if ( !isset ( $atts['servicios_form_config'] ) ) {
 	 	$atts['servicios_form_config'] = '';
 	 }
@@ -34,7 +34,7 @@ ob_start();
 // var_dump( $data );
 // echo '</pre>';
 ?>
-
+<h2 class="subt">Contactenos</h2>
 <div class="form_i asd" data-ng-app="ServicesFormApp" data-ng-cloak>
 	<form id="ns_form_servicios" name="ns_form_servicios" data-ng-controller="FormCtrl">
 		
@@ -93,7 +93,7 @@ ob_start();
 					<!--/ Car Model -->
 					
 				</div>
-			<!--/ Models -->
+				<!--/ Models -->
 			</div>
 			
 			<!-- Name -->
@@ -226,7 +226,7 @@ return ob_get_clean();
 }
 
 
-function ns_form_servicios_field_shortcode ( $settings, $value ) {
+function ns_form_field_shortcode ( $settings, $value ) {
 
 	// Include Shortcode Actions Files
 	$actions_dir 	= get_template_directory() . DIRECTORY_SEPARATOR . "actions";
@@ -415,16 +415,16 @@ function ns_form_servicios_field_shortcode ( $settings, $value ) {
     return ob_get_clean();
 }
 
-add_shortcode_param ( 'ns_form_servicios_field', 'ns_form_servicios_field_shortcode', get_template_directory_uri () . '/js/forms/servicios.admin.js' );
+add_shortcode_param ( 'ns_form_field', 'ns_form_field_shortcode', get_template_directory_uri () . '/js/forms/servicios.admin.js' );
 
 
 
-add_shortcode( 'ns_form_servicios', 'ns_form_servicios_shortcode' );
+add_shortcode( 'ns_form', 'ns_form_shortcode' );
 
 register_vc_shortcode ( 
 	array (
-		"name" 						=> __("NS Form Servicios", 'nskameleon'),
-		"base" 						=> "ns_form_servicios",
+		"name" 						=> __("NS Formulario", 'nskameleon'),
+		"base" 						=> "ns_form",
 		"class" 					=> "",
 		"category" 					=> __('Content', 'nskameleon'),
 		"as_parent" 				=> array(
@@ -434,13 +434,13 @@ register_vc_shortcode (
 		// 'admin_enqueue_js'			=> get_template_directory_uri () . '/vendor/angular/angular.min.js',
 	    "params" 					=> array(
 	    	array (
-	    		'type' 			=> 'ns_form_servicios_field',
+	    		'type' 			=> 'ns_form_field',
 	    		'holder'		=> 'div',
 	    		'class'			=> '',
 	    		'heading'		=> __(''),
 	    		'param_name'	=> 'servicios_form_config',
 	    		'value'			=> '',
-	    		'description'	=> __('Configuración del formulario de Servicios.')
+	    		'description'	=> __('Configuración de formularios.')
 	    	)
 	    )
 	)

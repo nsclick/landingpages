@@ -10,7 +10,7 @@ function include_php_files($dir){
 		include $dir . DIRECTORY_SEPARATOR . $file ;
 	}
 
-	return $_files;
+	return $files;
 }
 
 /**
@@ -119,7 +119,7 @@ function get_permalink_by_slug( $slug ){
 function get_models(){
 //	return array ();
 
-	$mydb = new wpdb ( 'devnscli_luis',']7J,(0s&#z4h','devnscli_inalco_generadorlandings_modelos','localhost' );
+	$mydb = new wpdb ( 'landingpages','nsdev','website','localhost' );
 	$rows = $mydb->get_results("SELECT t.*,o.option_value FROM wp_terms t, wp_options o WHERE t.term_id IN (SELECT term_id FROM wp_term_taxonomy where taxonomy = 'Modelo') AND t.term_id=o.option_name ORDER BY t.name");
 	
 	array_walk($rows, 'models_unserialize');
