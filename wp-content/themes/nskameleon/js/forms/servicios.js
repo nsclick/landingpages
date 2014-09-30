@@ -15,7 +15,7 @@
 		model.foto = fotoBlanca;
 	});
 	
-	console.log(data, models);
+	//console.log(data, models); 
 
 	angular.module ('ServicesFormApp', ['ngSanitize'])
 
