@@ -11,7 +11,7 @@ function ns_form_shortcode( $atts, $content = null) {
 	 }
 
 	 try {
-	 	$data = base64_decode ( $atts['servicios_form_config'] );
+	 	$data =  $atts['servicios_form_config'];
 	 } catch (Exception $e) {
 	 	$data = "{}";
 	 }
@@ -51,7 +51,7 @@ ob_start();
 		
 		<div class="wpb_row vc_row-fluid conte-inalco">
 		
-			<div class="vc_span6 wpb_column column_container" data-ng-if="isCrm">
+			<div class="vc_span6 wpb_column column_container" data-ng-if="showModels">
 				<div class="wpb_wrapper">
 					<h2 class="subt">Autos</h2>					
 						<!-- Models -->
@@ -62,10 +62,17 @@ ob_start();
 							<div class="foto" data-ng-if="showPhoto">
 								<img data-ng-src="{{photoServer}}{{m.foto}}" alt="{{m.name}}" title="{{m.name}}" />
 							</div>
-							<div class="texto">
-								<b>{{m.name}}</b>
-								<span data-ng-if="showPrice">Desde <b>{{m.option_value.precio_desde | price : '$ '}}</b></span>
+							
+							<div class="text_wrapper">
+								<div class="texto">
+									<b>{{m.name}}</b>
+									<span data-ng-if="showPrice">Desde <b>{{m.option_value.precio_desde | price : '$ '}}</b></span>
+								</div>
+								<div class="ficha" data-ng-if="$parent.$parent.showDescription">
+									<p>{{m.description}}</p>
+								</div>
 							</div>
+							
 							<div class="switcher">
 								<div class="onoffswitch">
 									<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch{{$index}}" data-ng-model="m.state" data-ng-change="toggleModel(m, $index)" >
@@ -85,6 +92,7 @@ ob_start();
 									</label>
 								</div>
 							</div>
+							
 						</div>
 						<!--/ Car Model -->
 						
@@ -93,9 +101,9 @@ ob_start();
 				</div>
 			</div>
 			
-			<div ng-class="{'vc_span12': !isCrm, 'vc_span6': isCrm}" class="wpb_column column_container">
+			<div ng-class="{'vc_span12': !showModels, 'vc_span6': showModels}" class="wpb_column column_container">
 				<div class="wpb_wrapper">
-					<h2 class="subt">Contactenos</h2>
+					<h2 class="subt">Cont&aacute;ctenos</h2>
 					
 					<!-- Success Message -->
 					<div data-ng-show="success" class="form-message mje_ok">
@@ -197,7 +205,7 @@ ob_start();
 						</div>
 						<!--/ Comments -->
 						
-						<div data-ng-if="isCrm">
+						<div data-ng-if="showModels">
 						<!-- Selected Models -->
 							<div class="caja">
 								<label for="autos">Autos seleccionados:</label>
@@ -293,7 +301,7 @@ function ns_form_field_shortcode ( $settings, $value ) {
 				<input type="radio" ng-model="data.crm" value="false" /><span>No</span>
 			</div>
 			<!--/ CRM -->
-
+			
 			<!-- Actions -->
 			<div class="form-group">
 				<label>Acci&oacute;n</label>
@@ -325,6 +333,15 @@ function ns_form_field_shortcode ( $settings, $value ) {
 					<input type="radio" data-ng-model="data.showPhoto" value="false">
 					<span>No</span>
 				</div>
+				
+				<div class="form-group">
+					<label>Mostrar Descripci&oacute;n</label>
+
+					<input type="radio" data-ng-model="data.showDescription" value="true">
+					<span>Si</span>
+					<input type="radio" data-ng-model="data.showDescription" value="false">
+					<span>No</span>
+				</div>
 
 				<div class="form-group">
 					<label>Servidor Im&aacute;genes</label>
@@ -339,8 +356,9 @@ function ns_form_field_shortcode ( $settings, $value ) {
 							<button type="button" data-ng-click="selectAllModelsSelection(false)">Remover todos</button>
 						</li>
 						<li data-ng-repeat="m in models track by m.term_id">
-							<input type="checkbox" data-ng-model="modelSelected" data-ng-change="checkModelSelection($index, modelSelected)" data-ng-checked="data.models.hasOwnProperty(m.term_id)">
+							<input type="checkbox" data-ng-model="modelSelected" data-ng-change="checkModelSelection ($index, modelSelected, m)" data-ng-checked="data.models.hasOwnProperty (m.term_id)">
 							<span>{{m.name}}</span>
+							<textarea data-ng-if="data.models.hasOwnProperty (m.term_id)" data-ng-change="updateData ()" data-ng-model="data.models[m.term_id].description" placeholder="Descripción del modelo"></textarea>
 						</li>
 					</ul>
 				</div>

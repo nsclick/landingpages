@@ -182,29 +182,34 @@
 				$scope.$watch ('data.showPhoto', function (newVal, oldVal) {
 					if (newVal != oldVal)
 						$scope.updateData ();
-				})
+				});
 
 				$scope.$watch ('data.showPrice', function (newVal, oldVal) {
 					if (newVal != oldVal)
 						$scope.updateData ();
-				})
+				});
+				
+				$scope.$watch ('data.showDescription', function (newVal, oldVal) {
+					if (newVal != oldVal)
+						$scope.updateData ();
+				});
 
 				$scope.$watch ('data.photoServer', function (newVal, oldVal) {
 					if (newVal != oldVal)
 						$scope.updateData ();
-				})
+				});
 
 				$scope.updateData = function () {
 					$scope.result = btoa (angular.toJson ($scope.data) );
 					console.log ('Update: ', $scope.data);
 				};
 
-				$scope.checkModelSelection = function ($index, m) {
+				$scope.checkModelSelection = function ($index, selected, model) {
 					var termId = $scope.models[$index].term_id;
-
-					if (m && !$scope.data.models.hasOwnProperty (termId))
-						$scope.data.models[termId] = true;
-					else if (!m && $scope.data.models.hasOwnProperty (termId))
+					
+					if (selected && !$scope.data.models.hasOwnProperty (termId))
+						$scope.data.models[termId] = {};
+					else if (!selected && $scope.data.models.hasOwnProperty (termId))
 						delete ($scope.data.models[termId]);
 
 					$scope.updateData ();

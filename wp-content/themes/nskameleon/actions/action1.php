@@ -24,17 +24,17 @@ function ns_action1_shortcode (  ) {
 	/* There was a sucursal selected */
 	if ( !empty ( $sucursal ) ) {
 		$emails = array_merge ( $sucursal['recipients'], $sucursal['ccs'] ); // Join sucursal recipients with ccs
-//		wp_mail ( $emails, 'Sucursal Email Subject', 'Body of the Sucursal email.' );
+		wp_mail ( $emails, 'Sucursal Email Subject', 'Body of the Sucursal email.' );
 	}
 	
 	/* There are fixed recipients */
 	if ( !empty ( $recipients ) ) {
-//		wp_mail ( $recipients, 'Recipients Email Subject', 'Body of the recipients email.' );
+		wp_mail ( $recipients, 'Recipients Email Subject', 'Body of the recipients email.' );
 	}
 	
 	/* Send user */
 	if ( !empty ( $email ) ) {
-//		wp_mail ( $email, 'Client Email Subject', 'Body of the client email.' );
+		wp_mail ( $email, 'Client Email Subject', 'Body of the client email.' );
 	}
 	
 	/* Send to CRM */

@@ -1,6 +1,6 @@
 (function (window, angular, $, d, undefined) {
 
-	var data 	= angular.fromJson (d.data),
+	var data 	= angular.fromJson ( unescape (decodeURIComponent (window.atob ( d.data ) ) ) ),
 		models	= d.models;
 	
 	angular.forEach (models, function (model) {
@@ -15,8 +15,6 @@
 		model.foto = fotoBlanca;
 	});
 	
-	//console.log(data, models); 
-
 	angular.module ('ServicesFormApp', ['ngSanitize'])
 
 		/**
@@ -34,9 +32,10 @@
 				$scope.sending 			= false;
 				$scope.sent 			= false;
 				$scope.isCrm  			= (data.crm == 'true');
+				$scope.showDescription	= (data.showDescription == 'true');
 				$scope.showPrice 		= (data.showPrice == 'true');
 				$scope.showPhoto 		= (data.showPhoto == 'true');
-				$scope.selectedModels 	= [];
+				$scope.selectedModels 	= {};
 				$scope.sucursales 		= [];
 				$scope.emails 			= [];
 				$scope.pixels 			= [];
@@ -59,15 +58,18 @@
 				
 				angular.extend ($scope.pixels, data.pixels);
 				
-				if ($scope.isCrm) {
+				if (angular.isObject (data.models)) {
 					angular.forEach (models, function (model) {
 						var termId = model.term_id;
 						
 						if (data.models.hasOwnProperty (termId)) {
+							model.description = data.models[termId].description; // Bind description
 							$scope.models.unshift (model);
 						}
 					});
 				};
+				
+				$scope.showModels = $scope.models.length > 0;
 				
 				angular.forEach ($scope.pixels, function (pixel) {
 					pixel.code = $sce.trustAsHtml (pixel.code);
@@ -77,11 +79,12 @@
 					state = !angular.isUndefined(state) ? state : model.state || false;
 					
 					if (state)
-						$scope.selectedModels.unshift(model);
+						$scope.selectedModels[model.term_id] = model;
 					else {
-						$scope.selectedModels.splice(index, 1);
+						delete ($scope.selectedModels[model.term_id]);
 						model.state = state;
 					}
+					
 				};
 				
 				$scope.submit = function () {
