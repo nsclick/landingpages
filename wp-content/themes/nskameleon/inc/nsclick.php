@@ -119,17 +119,58 @@ function get_permalink_by_slug( $slug ){
 function get_models(){
 //	return array ();
 
-	//$mydb = new wpdb ( 'landingpages','nsdev','website','localhost' );
-	$mydb = new wpdb ( 'devnscli_luis',']7J,(0s&#z4h','devnscli_inalco_generadorlandings_modelos','localhost' );
+	$mydb = new wpdb ( 'landingpages','nsdev','website','localhost' );
+	//$mydb = new wpdb ( 'devnscli_luis',']7J,(0s&#z4h','devnscli_inalco_generadorlandings_modelos','localhost' );
 	$rows = $mydb->get_results("SELECT t.*,o.option_value FROM wp_terms t, wp_options o WHERE t.term_id IN (SELECT term_id FROM wp_term_taxonomy where taxonomy = 'Modelo') AND t.term_id=o.option_name ORDER BY t.name");
 	
-	array_walk($rows, 'models_unserialize');
+	array_walk($rows, 'models_unserialize', $mydb);
 	
-	return $rows;
+	$models = array();
+	
+	//Discard those that haven't versions due to data error
+	foreach($rows as $m){
+		if( !isset($m->ignore) )
+			$models[] = $m;
+	}
+	
+	return $models;
 }
 
-function models_unserialize(&$item1, $key, $prefix=0){
+function models_unserialize(&$item1, $key, &$db){
     $item1->option_value = unserialize($item1->option_value);
+    
+    /*getting the cheapest version*/
+    
+    //List of versions
+    $sql = "SELECT ID FROM wp_posts where ID IN (SELECT object_id FROM wp_term_relationships where term_taxonomy_id=(SELECT term_taxonomy_id FROM wp_term_taxonomy WHERE term_id={$item1->term_id})) AND post_status='publish' AND post_type='post'";
+	$versions = $db->get_results($sql);
+	
+	$keys = array();
+	if(count($versions)){
+		//Get the prices
+		foreach($versions as $v){
+			$sql = "SELECT meta_key, meta_value FROM wp_postmeta WHERE post_id={$v->ID} AND meta_key IN ('_car_unique_reference', 'price')";
+			$data = $db->get_results($sql);
+			if($data[0]->meta_key == '_car_unique_reference'){
+				$keys[$data[0]->meta_value] = (int) str_replace('.', '', $data[1]->meta_value);
+			} else {
+				$keys[$data[1]->meta_value] = (int) str_replace('.', '', $data[0]->meta_value);
+			}
+			
+		}
+		
+		asort($keys);	
+		$cheapest = array_chunk($keys, 1, true);
+		$cheapest = $cheapest[0];
+		$cheapest = array_keys($cheapest);
+
+		$item1->option_value['id'] = $cheapest[0];
+
+	} else {
+		//Doesn't has versions, so MUST be ignored
+		$item1->ignore = TRUE;
+	}
+	
 }
 
 function debug_var ($data) {
@@ -143,3 +184,183 @@ function ns_load_scripts(){
 }
 add_action('wp_enqueue_scripts', 'ns_load_scripts');
 add_action('admin_enqueue_scripts', 'ns_load_scripts');
+
+function set_html_content_type() {
+	return 'text/html';
+}
+
+/*
+Array
+(
+    [action] => camiones_shortcode
+    [firstname] => Nombre
+    [lastname] => Apellido
+    [email] => creyes@nsclick.cl
+    [phone] => 897654654
+    [comments] => Pruebas
+    [sucursal] => Array
+        (
+            [name] => PUENTE ALTO
+            [recipients] => Array
+                (
+                    [0] => achaura@inalco.cl
+                )
+
+            [ccs] => Array
+                (
+                    [0] => orivas@inalco.cl
+                    [1] => mrodway@inalco.cl
+                    [2] => aquirland@inalco.cl
+                    [3] => ecastro@inalco.cl
+                    [4] => jbooth@inalco.cl
+                )
+
+            [address] => Av. Concha y Toro 1120, Puente Alto - Santiago, Chile.
+        )
+
+    [crm] => true
+    [rut] => 8.828.849-1
+    [models] => Array
+        (
+            [202] => Array
+                (
+                    [term_id] => 202
+                    [name] => NKR
+                    [slug] => nkr
+                    [term_group] => 0
+                    [option_value] => Array
+                        (
+                            [id] => 5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf
+                            [precio_desde] => 15890000
+                            [fotos] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [url] => /new-cars/5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf/gallery/nkr_01.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [url] => /new-cars/5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf/gallery/nkr_02.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [2] => Array
+                                        (
+                                            [url] => /new-cars/5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf/gallery/nkr_03.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [3] => Array
+                                        (
+                                            [url] => /new-cars/5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf/gallery/nkr_04.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [4] => Array
+                                        (
+                                            [url] => /new-cars/5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf/nkr_fb.jpg
+                                            [type] => fondo_blanco
+                                        )
+
+                                    [5] => Array
+                                        (
+                                            [url] => /new-cars/5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf/nkr_fb_menu.jpg
+                                            [type] => foto_menu
+                                        )
+
+                                )
+
+                            [postID] => 1147
+                            [categories] => Array
+                                (
+                                    [0] => vehiculos
+                                    [1] => autos-nuevos
+                                    [2] => camiones
+                                )
+
+                            [price] => 15711250
+                        )
+
+                    [foto] => /new-cars/5333637c-dc7c-dfcd-c6b2-5266ec7f8cdf/nkr_fb.jpg
+                    [description] => PBV (kg.): 4.700
+Capacidad de carga (Kg.): 2.800
+Torque Máximo (Nm/rpm): 354/1.600
+                    [$$hashKey] => 00B
+                    [state] => true
+                )
+
+            [204] => Array
+                (
+                    [term_id] => 204
+                    [name] => NQR 919 E4
+                    [slug] => nqr-919-e4
+                    [term_group] => 0
+                    [option_value] => Array
+                        (
+                            [id] => 560a24ee-015f-a357-8713-5266ecc93e0e
+                            [precio_desde] => 22990000
+                            [fotos] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [url] => /new-cars/560a24ee-015f-a357-8713-5266ecc93e0e/gallery/nqr-919-e4_02.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [url] => /new-cars/560a24ee-015f-a357-8713-5266ecc93e0e/gallery/nqr-919-e4_01.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [2] => Array
+                                        (
+                                            [url] => /new-cars/560a24ee-015f-a357-8713-5266ecc93e0e/gallery/nqr-919-e4_03.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [3] => Array
+                                        (
+                                            [url] => /new-cars/560a24ee-015f-a357-8713-5266ecc93e0e/gallery/nqr-919-e4_04.jpg
+                                            [type] => galeria
+                                        )
+
+                                    [4] => Array
+                                        (
+                                            [url] => /new-cars/560a24ee-015f-a357-8713-5266ecc93e0e/nqr_fb.jpg
+                                            [type] => fondo_blanco
+                                        )
+
+                                    [5] => Array
+                                        (
+                                            [url] => /new-cars/560a24ee-015f-a357-8713-5266ecc93e0e/nqr_fb_menu.jpg
+                                            [type] => foto_menu
+                                        )
+
+                                )
+
+                            [postID] => 1152
+                            [categories] => Array
+                                (
+                                    [0] => vehiculos
+                                    [1] => autos-nuevos
+                                    [2] => camiones
+                                )
+
+                            [price] => 22735000
+                        )
+
+                    [foto] => /new-cars/560a24ee-015f-a357-8713-5266ecc93e0e/nqr_fb.jpg
+                    [description] => PBV (kg.): 4.700
+Capacidad de carga (Kg.): 2.800
+Torque Máximo (Nm/rpm): 354/1.600
+                    [$$hashKey] => 009
+                    [state] => true
+                )
+
+        )
+
+)
+* */

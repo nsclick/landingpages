@@ -2,57 +2,57 @@
 
 function ns_camiones_shortcode (  ) {
 	
-	$response['p'] 			= $_POST;
-	$response['success'] 	= true;
+	//Send the sales email
+	$message = "Contacto: Landing page Camiones</strong><br><br>";
+    $message .= "Nombre: {$_POST['firstname']} {$_POST['lastname']}<br>";
+	$message .= "E-Mail: {$_POST['email']}<br>";
+    $message .= "Tel&eacute;fono: {$_POST['phone']}<br>";
+	$message .= "Sucursal: {$_POST['sucursal']['name']}<br>";
+	$message .= "Vehiculos Seleccionados<br>";
+
+	foreach($_POST["models"] as $model){
+		$message .= "- " . $model['name'] . "<br>";
+	}
+	$message .= "--------------------------------------------------------<br>";
+	$message .= "Mensaje: {$_POST['comments']}<br>";
 	
-	$firstname 	= isset ( $_POST['firstname'] ) 	? $_POST['firstname'] 	: null;
-	$lastname 	= isset ( $_POST['lastname'] ) 		? $_POST['lastname'] 	: null;
-	$lastname 	= isset ( $_POST['lastname'] ) 		? $_POST['lastname'] 	: null;
-	$phone 		= isset ( $_POST['phone'] ) 		? $_POST['phone'] 		: null;
-	$email 		= isset ( $_POST['email'] ) 		? $_POST['email'] 		: null;
-	$sucursal 	= isset ( $_POST['sucursal'] ) 		? $_POST['sucursal'] 	: null;
 	$recipients	= isset ( $_POST['recipients'] ) 	? $_POST['recipients'] 	: null;
-	$models  	= isset ( $_POST['models'] ) 		? $_POST['models'] 		: null;
-	$rut 		= isset ( $_POST['rut'] ) 			? $_POST['rut'] 		: null;
-	$comments 	= isset ( $_POST['comments'] ) 		? $_POST['comments'] 	: null;
 	
-	/* There was a sucursal selected */
-	if ( !empty ( $sucursal ) ) {
-		$emails = array_merge ( $sucursal['recipients'], $sucursal['ccs'] ); // Join sucursal recipients with ccs
-		wp_mail ( $emails, 'Sucursal Email Subject', 'Body of the Sucursal email.' );
+	$to = is_array($recipients) ? array_merge($_POST['sucursal']['recipients'], $recipients) : $to;
+	
+	$headers = array();
+	$cc = is_array($_POST['sucursal']['ccs']) ? $_POST['sucursal']['ccs'] : array();
+	foreach($cc as $m){
+		$headers[] = "Cc: $m";
 	}
 	
-	/* There are fixed recipients */
-	if ( !empty ( $recipients ) ) {
-		wp_mail ( $recipients, 'Recipients Email Subject', 'Body of the recipients email.' );
-	}
+	$subject = "Contacto desde Pagina web www.chevroletinalco.cl/camiones";
 	
-	/* Send user */
-	if ( !empty ( $email ) ) {
-		wp_mail ( $email, 'Client Email Subject', 'Body of the client email.' );
-	}
+	add_filter( 'wp_mail_content_type', 'set_html_content_type' );	
 	
-	/* Send to CRM */
-	if ( !empty ( $models ) ) {
-		$products = array();
-		foreach ( $models as $model ) {
-			$crm_product_id = $model['option_value']['id'];
-			$products[] = $crm_product_id; 
-		}
-		
-		$data = array(
-			'rut'			=> $rut,
-			'email'			=> $email,
-			'telefono'		=> $phone,
-			'nombre'		=> $firstname . ' ' . $lastname,
-			'comentario'	=> $comments,
-			'products'		=> $products
-		);
-		
-		$response['crm'] = send_quote ( $data );
-	}
+	$response['success'] = wp_mail( $to, $subject, $message, $headers );
 	
+	//Debug
+//	$headers = array('Cc: creyes@nsclick.cl');	
+//	$response['success'] = wp_mail( 'cesar.cesarreyes@gmail.com', $subject, $message, $headers );
+
+	//Send the client email
+	$message = "Estimado(a) <strong>{$_POST['firstname']} {$_POST['lastname']}</strong><br/><br/>";
+	$message .= "Hemos recibido su información, será contactado a la brevedad por nuestro ejecutivo: <br/>";
+	$message .= "Nombre: {$_POST['sucursal']['recipients'][0]}<br/>";
+	$message .= "Sucursal: {$_POST['sucursal']['name']} - {$_POST['sucursal']['address']}<br/><br/>";
+	$message .= "Lo invitamos a revisar información más detallada de los modelos que ha seleccionado de su interés:<br/>";		
 	
+	$to = $_POST['email'];
+	$subject = "Contacto recibido desde www.chevroletinalco.cl";
+
+	$result = wp_mail( $to, $subject, $message );
+	
+	//Debug
+//	$result = wp_mail( 'cesar.cesarreyes@gmail.com', $subject, $message);
+
+	
+	remove_filter( 'wp_mail_content_type', 'set_html_content_type' );
 	echo json_encode ( $response );
 	die();
 }

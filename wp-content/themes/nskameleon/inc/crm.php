@@ -46,7 +46,7 @@ class Crm{
 		
 		$data['products'] = $n_products;
 		
-		echo $this->url . '?' . http_build_query($data);die();
+		//echo $this->url . '?' . http_build_query($data);die();
 		$result = _curl($this->url, http_build_query($data));
 		
 		$result = json_decode($result);

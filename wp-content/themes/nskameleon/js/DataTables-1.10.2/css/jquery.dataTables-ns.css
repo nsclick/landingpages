@@ -1,7 +1,7 @@
 /*  NSStyles */
 thead tr{background:#F1A218!important;color:#fff!important}
 /*#models-table_info{margin:20px 0!important}*/
-#models-table_filter{margin:10px!important}*/
+#models-table_filter{margin:10px 0!important}*/
 td.precio-lista {font-weight:normal; font-size: 10px; text-decoration: line-through; text-align: right}
 td.precio-promo {color:  #008000; text-align: right}
 .dataTables_scrollBody{height: 250px!important}

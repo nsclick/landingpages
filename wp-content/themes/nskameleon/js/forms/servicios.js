@@ -1,7 +1,8 @@
 (function (window, angular, $, d, undefined) {
 
-	var data 	= angular.fromJson ( unescape (decodeURIComponent (window.atob ( d.data ) ) ) ),
-		models	= d.models;
+	var data 		= angular.fromJson ( unescape (decodeURIComponent (window.atob ( d.data ) ) ) ),
+		models		= d.models,
+		pageTitle 	= d.page_title;
 	
 	angular.forEach (models, function (model) {
 		var fotos 		= model.option_value.fotos,
@@ -113,7 +114,8 @@
 					 		lastname: 		$scope.lastname,
 					 		email: 			$scope.email,
 					 		phone:	 		$scope.phone,
-					 		comments: 		$scope.comments
+					 		comments: 		$scope.comments,
+					 		page_title:		pageTitle
 					};
 					
 					// Sucursales

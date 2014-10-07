@@ -22,8 +22,8 @@ function ns_csv_list_shortcode( $atts ) {
 <script type="text/javascript">
 jQuery(document).ready( function () {
     jQuery('#models-table').DataTable( {
-		paging: false,
-		scrollY: 400,
+		//paging: false,
+		//scrollY: 400,
 		language: {
 			"sProcessing":     "Procesando...",
 			"sLengthMenu":     "Mostrar _MENU_ registros",

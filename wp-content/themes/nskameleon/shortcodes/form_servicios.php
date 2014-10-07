@@ -1,15 +1,13 @@
 <?php
-// add_action( 'wp_ajax_ns_form_servicios_submit', 'ns_form_servicios_submit' );
-// add_action( 'wp_ajax_nopriv_ns_form_servicios_submit', 'ns_form_servicios_submit' );
 
 /**
- * Formulario de Servicios
+ * Formulario
  */
 function ns_form_shortcode( $atts, $content = null) {
 	if ( !isset ( $atts['servicios_form_config'] ) ) {
 	 	$atts['servicios_form_config'] = '';
 	 }
-
+ 	
 	 try {
 	 	$data =  $atts['servicios_form_config'];
 	 } catch (Exception $e) {
@@ -24,7 +22,8 @@ function ns_form_shortcode( $atts, $content = null) {
 	 	array(
 	 		'ajax' 		=> admin_url( 'admin-ajax.php' ),
 	 		'data'		=> $data,
-	 		'models'	=> get_models()
+	 		'models'	=> get_models(),
+	 		'page_title' => get_the_title()
 	 	)
 	 );
 
@@ -51,9 +50,9 @@ ob_start();
 		
 		<div class="wpb_row vc_row-fluid conte-inalco">
 		
-			<div class="vc_span6 wpb_column column_container" data-ng-if="showModels">
-				<div class="wpb_wrapper">
-					<h2 class="subt">Autos</h2>					
+			<div class="vc_span5 wpb_column column_container" data-ng-if="showModels">
+				<div class="wpb_wrapper height720">
+					<h2 class="subt">Nuestros Autos</h2>					
 						<!-- Models -->
 						<div class="selector">
 						
@@ -101,23 +100,20 @@ ob_start();
 				</div>
 			</div>
 			
-			<div ng-class="{'vc_span12': !showModels, 'vc_span6': showModels}" class="wpb_column column_container">
+			<div ng-class="{'vc_span12': !showModels, 'vc_span7': showModels}" class="wpb_column column_container">
 				<div class="wpb_wrapper">
-					<h2 class="subt">Cont&aacute;ctenos</h2>
+					<h2 class="subt">Ingrese sus datos</h2>
 					
 					<!-- Success Message -->
 					<div data-ng-show="success" class="form-message mje_ok">
-						<p>
-							<span>Enhorabuena, tus datos han sido enviados con &eacute;xito!</span>
-							<br>
-							<span>Recibir&aacute;s en tu correo informaci&oacute;n completa de todos los servicios.</span>
-						</p>
+						<p><span>Muchas gracias por contactarnos, hemos recibido sus datos.</span></p>
+						<p><span>Pronto nuestros ejecutivos se comunicarán con usted</span></p>
 					</div>
 					<!--/ Success Message -->
 
 					<!-- Error Message -->
 					<div data-ng-show="_error" class="form-message mje_error">
-						<p>Oops, algo malo sucedi&oacute;. Por favor int&eacute;ntalo m&aacute;s tarde.</p>
+						<p>Lo sentimos, en este momento este servicio no esta disponible. Por favor int&eacute;ntelo m&aacute;s tarde.</p>
 					</div>
 					<!--/ Error Message -->
 					
@@ -222,12 +218,12 @@ ob_start();
 						<!-- Submit Button -->
 						<div class="btn_send">
 							<p>
-								<span>* Al cotizar tienes la opcion de realizar un </span>
-								<img src="/landingpages/wp-content/themes/nskameleon/images/testdrive.png" alt="Test Drive" title="Test Drive" />
+								<span>* Al cotizar tienes la opcion de realizar un Test Drive</span>
+								<!-- <img src="/landingpages/wp-content/themes/nskameleon/images/testdrive.png" alt="Test Drive" title="Test Drive" /> -->
 							</p>
 				
 							<button type="submit" data-ng-disabled="sending" data-ng-click="submit()" class="btn">
-								<span data-ng-if="!sending">Enviar</span>
+								<span data-ng-if="!sending">Cotizar</span>
 								<span data-ng-if="sending">Enviando...</span>
 							</button>
 				
@@ -376,12 +372,12 @@ function ns_form_field_shortcode ( $settings, $value ) {
 
 				<div class="form-group">
 					<ul>
-						<li data-ng-repeat="s in data.sucursales" data-ng-form="sucursal_form" data-ng-controller="SucursalFormCtrl">
+						<li class="ns-sucursal" data-ng-repeat="s in data.sucursales" data-ng-form="sucursal_form" data-ng-controller="SucursalFormCtrl">
 							<input type="text" data-ng-model="s.name" placeholder="Nombre Sucursal" />
 							<input type="text" data-ng-model="s.address" placeholder="Dirección Sucursal" />
 							<input type="text" data-ng-model="s.phone" placeholder="Teléfono Sucursal" />
 
-							<input type="text" data-ng-model="recipient" placeholder="Destinatarrio" />
+							<input type="text" data-ng-model="recipient" placeholder="Destinatario" />
 							<button type="button" data-ng-click="addRecipient()">A&ntilde;adir Destinatario</button>
 							<input type="text" data-ng-model="cc" placeholder="CC" />
 							<button type="button" data-ng-click="addCc()">A&ntilde;adir CC</button>
@@ -413,9 +409,9 @@ function ns_form_field_shortcode ( $settings, $value ) {
 			<!-- Pixels -->
 			<div class="form-group">
 				<label>Pixels</label>
-				<input type="text" name="pixel" data-ng-model="pixel">
-				<input type="text" data-ng-model="pixelParamName" />
-				<input type="text" data-ng-model="pixelParamValue" />
+				<input type="text" name="pixel" data-ng-model="pixel" placeholder="HTML">
+				<input type="text" data-ng-model="pixelParamName" placeholder="Nombre del parámetro" />
+				<input type="text" data-ng-model="pixelParamValue" placeholder="Valor del parámetro" />
 				<button type="button" data-ng-click="addPixel()">Agregar</button>
 
 				<div>

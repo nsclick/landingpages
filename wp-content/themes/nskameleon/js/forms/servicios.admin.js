@@ -39,7 +39,7 @@
 					Data.value.showPhoto = null;
 
 				if (!Data.value.hasOwnProperty ('photoServer'))
-					Data.value.photoServer = null;
+					Data.value.photoServer = 'http://chevroletinalco.cl/wp-content/uploads';
 
 				if (!Data.value.hasOwnProperty ('crm'))
 					Data.value.crm = false;
