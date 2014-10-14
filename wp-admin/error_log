@@ -64,3 +64,7 @@
 [30-Sep-2014 17:33:27 UTC] PHP Warning:  scandir() [<a href='function.scandir'>function.scandir</a>]: (errno 2): No such file or directory in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/inc/nsclick.php on line 21
 [30-Sep-2014 17:33:27 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/inc/nsclick.php on line 24
 [01-Oct-2014 14:04:35 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/shortcodes/form_servicios.php on line 14
+[07-Oct-2014 19:15:42 UTC] PHP Warning:  array_walk() expects parameter 1 to be array, null given in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/inc/nsclick.php on line 126
+[07-Oct-2014 19:15:42 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/inc/nsclick.php on line 131
+[07-Oct-2014 19:27:16 UTC] PHP Warning:  array_walk() expects parameter 1 to be array, null given in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/inc/nsclick.php on line 126
+[07-Oct-2014 19:27:16 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/inc/nsclick.php on line 131

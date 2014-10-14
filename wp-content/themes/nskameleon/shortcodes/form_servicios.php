@@ -13,6 +13,8 @@ function ns_form_shortcode( $atts, $content = null) {
 	 } catch (Exception $e) {
 	 	$data = "{}";
 	 }
+	 
+	 $post = get_post ();
 
 	 wp_enqueue_script ( 'angularjs.ngSanitize', get_stylesheet_directory_uri() . '/vendor/angular/angular-sanitize.js', array('angularjs'));
 	 wp_enqueue_script ( 'ns_form', get_stylesheet_directory_uri() . '/js/forms/servicios.js', array('jquery', 'angularjs'), '1.0', false );
@@ -20,17 +22,18 @@ function ns_form_shortcode( $atts, $content = null) {
 	 	'ns_form',
 	 	'ns_data',
 	 	array(
-	 		'ajax' 		=> admin_url( 'admin-ajax.php' ),
-	 		'data'		=> $data,
-	 		'models'	=> get_models(),
-	 		'page_title' => get_the_title()
+	 		'ajax' 			=> admin_url( 'admin-ajax.php' ),
+	 		'data'			=> $data,
+	 		'models'		=> get_models(),
+	 		'page_title'	=> get_the_title(),
+	 		'page_slug'		=> $post->post_name
 	 	)
 	 );
 
 ob_start();
 
 // echo '<pre>';
-// var_dump( $data );
+// var_dump( $post->post_name );
 // echo '</pre>';
 ?>
 
@@ -64,11 +67,11 @@ ob_start();
 							
 							<div class="text_wrapper">
 								<div class="texto">
-									<b>{{m.name}}</b>
-									<span data-ng-if="showPrice">Desde <b>{{m.option_value.precio_desde | price : '$ '}}</b></span>
-								</div>
-								<div class="ficha" data-ng-if="$parent.$parent.showDescription">
-									<p>{{m.description}}</p>
+                                	<div style="display:table-cell;vertical-align:middle">
+										<span class="fmodelo"><b>{{m.name}}</b></span>
+										<br data-ng-if="showPrice" /><span class="fprecio" data-ng-if="showPrice">Desde <b>{{m.option_value.precio_desde | price : '$ '}}</b></span>
+										<br data-ng-if="$parent.$parent.showDescription" /><span class="ficha fdescripcion" data-ng-if="$parent.$parent.showDescription">{{m.description}}</span>
+                                        </div>
 								</div>
 							</div>
 							
@@ -79,7 +82,7 @@ ob_start();
 										<span class="onoffswitch-inner">
 											<span class="onoffswitch-active">
 												<span class="onoffswitch-switch">
-													<img src="<?php echo get_template_directory_uri(); ?>/images/ico-yes.png" alt="Inalco" title="Inalco" />
+													<img src="<?php echo get_template_directory_uri(); ?>/images/ico-yess.png" alt="Inalco" title="Inalco" />
 												</span>
 											</span>
 											<span class="onoffswitch-inactive">
@@ -146,10 +149,10 @@ ob_start();
 						<!-- Rut -->
 						<div class="caja" data-ng-if="isCrm">
 							<label for="rut">Rut:</label>
-							<input id="rut" name="rut" type="text" data-ng-model="$parent.rut" required />
-				
-							<span class="help-block" data-ng-show="ns_form_servicios.rut.$dirty && ns_form_servicios.rut.$error.required">
-								<span>Por favor ingrese su Rut.</span>
+							<input id="rut" name="rut" type="text" data-ng-model="$parent.rut" required ng-change="validateRut($parent.rut)" />
+										
+							<span class="help-block" data-ng-show="ns_form_servicios.rut.$dirty && ns_form_servicios.rut.$invalid">
+								<span>Rut inv&aacute;lido.</span>
 							</span>
 						</div>
 						<!--/ Rut -->
@@ -211,8 +214,13 @@ ob_start();
 										<a href="#" data-ng-click="toggleModel(m, $index, false)"><span>x</span></a>
 									</div>
 								</div>
-							</div>
-						<!--/ Selected Models -->
+								
+								<span data-ng-if="ns_form_servicios.$dirty && missingModels" class="help-block help-invalid">
+									<i class="icon icon-cancel"></i>
+									<span>No hay modelos seleccionados.</span>
+								</span>
+							</div
+						><!--/ Selected Models -->
 						</div>
 				
 						<!-- Submit Button -->
@@ -311,6 +319,10 @@ function ns_form_field_shortcode ( $settings, $value ) {
 			<div class="form-group">
 
 				<label>Modelos</label>
+				
+				<div class="form-group error-message" data-ng-if="missingModels">
+					<p><strong>Error:</strong> No hay modelos seleccionados y se ha activado la conexi&oacute;n con el CRM. Favor seleccionar al menos un modelo.</p>
+				</div>
 
 				<div class="form-group">
 					<label>Mostrar precio</label>
@@ -453,7 +465,7 @@ function ns_form_field_shortcode ( $settings, $value ) {
 			<!--/ Debug -->
 
 			<!-- Visual Composer Field -->
-				<input name="<?php echo $settings['param_name']; ?>" type="text" class="wpb_vc_param_value" data-ng-model="result" />
+				<input name="<?php echo $settings['param_name']; ?>" type="text" style="display:none;" class="wpb_vc_param_value" data-ng-model="result" />
 			<!--/ Visual Composer Field -->
 		</form>
 

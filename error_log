@@ -34,3 +34,12 @@
 [30-Sep-2014 17:34:59 UTC] PHP Warning:  file() [<a href='function.file'>function.file</a>]: Filename cannot be empty in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/shortcodes/csv_list.php on line 14
 [30-Sep-2014 17:34:59 UTC] PHP Warning:  array_shift() expects parameter 1 to be array, boolean given in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/shortcodes/csv_list.php on line 15
 [30-Sep-2014 17:34:59 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/shortcodes/csv_list.php on line 66
+[07-Oct-2014 18:33:49 UTC] PHP Fatal error:  Call to undefined function twentyfourteen_get_featured_posts() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/featured-content.php on line 21
+[08-Oct-2014 14:25:07 UTC] PHP Fatal error:  Call to undefined function twentyfourteen_get_featured_posts() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/featured-content.php on line 21
+[08-Oct-2014 16:23:12 UTC] PHP Fatal error:  Call to undefined function twentyfourteen_get_featured_posts() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/featured-content.php on line 21
+[09-Oct-2014 15:51:14 UTC] PHP Fatal error:  Call to undefined function twentyfourteen_get_featured_posts() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/featured-content.php on line 21
+[13-Oct-2014 16:21:23 UTC] PHP Fatal error:  Call to undefined function twentyfourteen_get_featured_posts() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/featured-content.php on line 21
+[13-Oct-2014 19:12:31 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/shortcodes/form_servicios.php on line 28
+[13-Oct-2014 19:12:31 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/shortcodes/form_servicios.php on line 28
+[13-Oct-2014 19:14:09 UTC] PHP Parse error:  syntax error, unexpected '[' in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/shortcodes/form_servicios.php on line 34
+[13-Oct-2014 21:11:30 UTC] PHP Fatal error:  Call to undefined function twentyfourteen_get_featured_posts() in /home/devnscli/public_html/landingpages/wp-content/themes/nskameleon/featured-content.php on line 21

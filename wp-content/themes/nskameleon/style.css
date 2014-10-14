@@ -4256,22 +4256,9 @@ h2.subt{margin:0 20px;padding:20px 0 !important;color:#004378}
 .selector .auto .texto span{color:#666}
 .selector .auto .switcher{display:table-cell;vertical-align:middle;width:24%}
 
-@media (max-width:768px){
-	.entry-content{width:100%;padding:0!important}
-	.wpb_row{margin:0!important}
-	.vc_custom_1405633747187 .vc_span6{margin-bottom:0!important}
-	.vc_custom_1405633747187 .vc_span6 .wpb_row .vc_span4{display:inline-block;margin-bottom:0!important;padding:0 10px 0 0}
-	.select_contacto{float:none;margin:10px 0}
-	.box_bajadac{width:auto;float:none;padding:2px 0}
-	.selector{height:350px}
-	.selector .auto{width:100%}
-	.selector .auto .foto{text-align:center}
-	.selector .onoffswitch{display:inline-block}
-	.selector .auto .switcher{text-align:right}
-	.vc_responsive .wpb_row .vc_span7,.vc_responsive .wpb_row .vc_span5{padding:0!important}
-	.form_i .autos .auto1{width:100%}
-	input[type="submit"]{margin-top:20px}
-}
+
+
+
 
 
 .onoffswitch {
@@ -4335,13 +4322,49 @@ h2.subt{margin:0 20px;padding:20px 0 !important;color:#004378}
 #ns_form_servicios .text_wrapper {
 	/*width: 155px !important;*/
 	margin: 0px 0px 6px 0px !important;
-	height: 46px !important;
 }
 
 #ns_form_servicios .ficha {
-	font-size: 12px;
+
 	font-weight: normal;
 	color: #252525;
 	padding: 8px 10px;
 }
-.height720{height:720px}
+.height720{height:720px}/* nsclick 09/10/2014 */.ico-arrow img{margin-top:8px}
+.onoffswitch{width:auto}
+label.onoffswitch-label{width:100%}
+.onoffswitch-switch img{margin-top:8px}
+.texto span{display:inline!important}
+#ns_form_servicios .ficha{padding:5px 0 0 0!important}
+.texto .fmodelo{color:#fba919!important;font-size:12px}
+.texto .fprecio{font-size:11px}
+.texto .fdescripcion{display:inline-block!important;font-size:10px}
+#models-table_length{padding-top:20px}
+#models-table_paginate{padding-top:10px}
+#models-table_info{padding-top:20px}
+
+
+@media (min-width:1024px){
+	.selector .auto{position:relative}
+	#ns_form_servicios .text_wrapper{width:140px!important;position:absolute;height:100%;top:0;left:120px}
+	.selector .auto .texto{padding:10px 0;display:table;height:100%;width:100%}
+}
+
+@media (max-width:768px){
+	.entry-content{width:100%;padding:0!important}
+	.wpb_row{margin:0!important}
+	.vc_custom_1405633747187 .vc_span6{margin-bottom:0!important}
+	.vc_custom_1405633747187 .vc_span6 .wpb_row .vc_span4{display:inline-block;margin-bottom:0!important;padding:0 10px 0 0}
+	.select_contacto{float:none;margin:10px 0}
+	.box_bajadac{width:auto;float:none;padding:2px 0}
+	.selector{height:350px}
+	.selector .auto{width:100%}
+	.selector .auto .foto{text-align:center}
+	.selector .onoffswitch{display:inline-block}
+	.selector .auto .switcher{text-align:right}
+	.vc_responsive .wpb_row .vc_span7,.vc_responsive .wpb_row .vc_span5{padding:0!important}
+	.form_i .autos .auto1{width:100%}
+	input[type="submit"]{margin-top:20px}
+	.height720{height: auto;
+padding-bottom: 20px!important;}
+}

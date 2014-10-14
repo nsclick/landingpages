@@ -110,7 +110,7 @@
 			'Models',
 			'PostId',
 			function ($scope, Data, Actions, Models, PostId) {
-				$scope.debug  		= true;
+				$scope.debug  		= false;
 				$scope.sucursal 	= null;
 				$scope.action  		= null;
 				$scope.data 		= Data.value;
@@ -200,6 +200,12 @@
 				});
 
 				$scope.updateData = function () {
+					// Validate at least one model is selected if CRM connection enabled
+					if ($scope.data.crm == 'true')
+						$scope.missingModels = Object.keys($scope.data.models).length == 0;
+					else
+						$scope.missingModels = false;
+					
 					$scope.result = btoa (angular.toJson ($scope.data) );
 					console.log ('Update: ', $scope.data);
 				};
