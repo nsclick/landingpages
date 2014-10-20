@@ -121,7 +121,6 @@ function get_models(){
 
 //	$mydb = new wpdb ( 'landingpages','nsdev','website','localhost' );
 //	$mydb = new wpdb ( 'devnscli_luis',']7J,(0s&#z4h','devnscli_inalco_generadorlandings_modelos','localhost' );
-	$mydb = new wpdb ( 'chevrole_site','Egh1DALZ0bxW','chevrole_site','localhost' );
 
 	$rows = $mydb->get_results("SELECT t.*,o.option_value FROM wp_terms t, wp_options o WHERE t.term_id IN (SELECT term_id FROM wp_term_taxonomy where taxonomy = 'Modelo') AND t.term_id=o.option_name ORDER BY t.name");
 	
@@ -135,26 +134,7 @@ function get_models(){
 			$models[] = $m;
 	}
 	
-    addCustomModels($models);
-    //debug_var($models);
 	return $models;
-}
-
-function addCustomModels (& $models){
-    $m->name = 'NKR 715';
-    $m->option_value = array(
-            'precio_desde' => 00000000,
-            'fotos' => array(
-                array(
-                    'url' => '/new-cars/nkr-715.jpg',
-                    'type' => 'fondo_blanco'
-                )
-            )
-        );
-    //new-cars/nkr-715.jpg
-    $models[] = $m;
-    
-    return true;
 }
 
 function models_unserialize(&$item1, $key, &$db){

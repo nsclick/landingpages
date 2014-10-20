@@ -62,7 +62,10 @@ function ns_email_crm_shortcode (  ) {
 	if( isset($_POST["models"]) ){
 		$body[] = "Lo invitamos a revisar información más detallada de los modelos que ha seleccionado de su interés:<br/>";
 		foreach ($_POST["models"] as $m){
-			$body[] = $m['name']." <a href='http://chevroletinalco.cl/{$m['slug']}'>ver</a>";
+            if(isset($m['slug']) && $m['slug'] != '')
+                $body[] = $m['name']." <a href='http://chevroletinalco.cl/{$m['slug']}'>ver</a>";
+            else
+                $body[] = $m['name'];
 		}
 	}
 	$body[] = '';
